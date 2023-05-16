@@ -1,26 +1,23 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.17;
 
-import "./libraries/bls12377/G1.sol";
-import "./libraries/Bitmask.sol";
+import "./common/KeySet.sol";
+import "./common/PackedProof.sol";
+import "./common/PublicInput.sol";
+import "./common/bls12377/G2.sol";
 
 contract Verifier {
 
-    struct AccountablePublicInput {
-        G1Affine apk;
-        Bitmask bitmask;
+    function verify_aggregates(
+        AccountablePublicInput calldata public_input,
+        PackedProof calldata proof,
+        Signature calldata aggregate_signature,
+        KeysetCommitment calldata new_validator_set_commitment
+    ) external {
+        // 1. verify_packed
+        // 2. verify_bls
+        // 3. check threhold
     }
-
-    // function verify_aggregates(
-    //     AccountablePublicInput calldata public_input,
-    //     PackedProof calldata proof,
-    //     Signature calldata aggregate_signature,
-    //     KeysetCommitment calldata new_validator_set_commitment
-    // ) external {
-    //     // 1. verify_packed
-    //     // 2. verify_bls
-    //     // 3. check threhold
-    // }
 
     // function verify_packed(
     //     AccountablePublicInput calldata public_input,

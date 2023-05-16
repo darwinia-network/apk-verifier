@@ -1,8 +1,7 @@
 pragma solidity ^0.8.17;
 
-struct Fp {
+struct Bw6Fp {
     uint a;
     uint b;
+    uint c;
 }
-
-library FP {}
