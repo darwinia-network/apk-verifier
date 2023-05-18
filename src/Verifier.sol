@@ -7,9 +7,11 @@ import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
 import "./common/bw6761/Fr.sol";
 import "./common/poly/domain/Radix2.sol";
+import "./common/poly/evaluations/Lagrange.sol";
 
 contract Verifier {
     using BitMask for Bitmask;
+    using Lagrange for Bw6Fr;
 
     KeysetCommitment public pks_comm;
 
@@ -19,7 +21,7 @@ contract Verifier {
     struct Challenges {
         Bw6Fr r;
         Bw6Fr phi;
-        Bw6Fr zata;
+        Bw6Fr zeta;
         Bw6Fr[] nus;
     }
 
@@ -68,7 +70,7 @@ contract Verifier {
         PackedProof calldata proof
     ) internal pure returns (bool) {
         Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
-        lagrange_evaluations(challenges.zeta, domain());
+        challenges.zeta.lagrange_evaluations(domain());
         // 3. validate_evaluations
         // 4. evaluate_constraint_polynomials
         // 5. w = horner_field
@@ -104,18 +106,6 @@ contract Verifier {
         // nus: 224847281907241683364320560038619621321
         // nus: 64748762694498982892334791840564383988
         // nus: 325921140606714040130243320654852173932
-    }
-
-    function lagrange_evaluations(
-        Bw6Fr memory z,
-        Radix2EvaluationDomain memory domain
-    ) internal pure returns (
-        LagrangeEvaluations memory evals_at_zeta
-    ) {
-        Bw6Fr memory z_n = z;
-        for (uint i = 0; i < domain.log_size_of_group; i++) {
-            zn = z_n.square();
-        }
     }
 
     // function validate_evaluations(

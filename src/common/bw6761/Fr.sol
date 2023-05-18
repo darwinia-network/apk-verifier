@@ -18,6 +18,51 @@ library BW6FR {
         return Bw6Fr(0, 1);
     }
 
+    function is_geq_modulus(Bw6Fr memory self) internal pure returns (bool) {
+        return (eq(self, r()) || gt(self, r()));
+    }
+
+    function eq(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (bool) {
+        return (x.a == y.a && x.b == y.b);
+    }
+
+    function gt(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (bool) {
+        return (x.a > y.a || (x.a == y.a && x.b > y.b));
+    }
+
+    function add_nomod(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (Bw6Fr memory z) {
+        unchecked {
+            z.b = x.b + y.b;
+            z.a = x.a + y.a + (z.b >= x.b && x.b >= y.b ? 0 : 1);
+        }
+    }
+
+    function add(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (Bw6Fr memory z) {
+        z = add_nomod(x, y);
+        if (is_geq_modulus(z)) {
+            z = subtract_modulus(z);
+        }
+    }
+
+    function subtract_modulus(Bw6Fr memory self) internal pure returns (Bw6Fr memory) {
+        return sub(self, r());
+    }
+
+    function sub(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (Bw6Fr memory z) {
+        Bw6Fr memory m = x;
+        if (gt(y, x)) {
+            m = add_nomod(m, r());
+        }
+        unchecked {
+            z.b = m.b - y.b;
+            z.a = m.a - y.a - (z.b <= m.b ? 0 : 1);
+        }
+    }
+
+    function mul(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (Bw6Fr memory z) {
+
+    }
+
     function square(Bw6Fr memory self) internal view returns (Bw6Fr memory) {
         uint[8] memory input;
         input[0] = 0x40;
