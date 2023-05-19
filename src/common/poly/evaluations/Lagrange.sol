@@ -18,7 +18,7 @@ library Lagrange {
     function lagrange_evaluations(
         Bw6Fr memory z,
         Radix2EvaluationDomain memory dm
-    ) internal pure returns (
+    ) internal view returns (
         LagrangeEvaluations memory evals_at_zeta
     ) {
         Bw6Fr memory z_n = z;

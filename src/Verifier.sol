@@ -68,7 +68,7 @@ contract Verifier {
     function verify_packed(
         AccountablePublicInput calldata public_input,
         PackedProof calldata proof
-    ) internal pure returns (bool) {
+    ) internal view returns (bool) {
         Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
         challenges.zeta.lagrange_evaluations(domain());
         // 3. validate_evaluations
