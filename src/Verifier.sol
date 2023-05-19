@@ -58,7 +58,7 @@ contract Verifier {
         PackedProof calldata proof,
         Signature calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    ) external {
+    ) external view {
         uint n_signers = public_input.bitmask.count_ones();
         verify_packed(public_input, proof);
         // 2. verify_bls

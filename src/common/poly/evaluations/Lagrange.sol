@@ -19,15 +19,27 @@ library Lagrange {
         Bw6Fr memory z,
         Radix2EvaluationDomain memory dm
     ) internal view returns (
-        LagrangeEvaluations memory evals_at_zeta
+        LagrangeEvaluations memory
     ) {
         Bw6Fr memory z_n = z;
         for (uint i = 0; i < dm.log_size_of_group; i++) {
-            z_n = z_n.square();
+            z_n.square();
         }
 
         Bw6Fr memory z_n_minus_one = z_n.sub(BW6FR.one());
-        Bw6Fr memory z_n_minus_one_dev_n = z_n_minus_one.mul(dm.size_inv);
+        Bw6Fr memory z_n_minus_one_div_n = z_n_minus_one.mul(dm.size_inv);
 
+        Bw6Fr memory inv_first = z.sub(BW6FR.one());
+        Bw6Fr memory inv_last = dm.group_gen.mul(z).sub(BW6FR.one());
+        inv_first.inverse();
+        inv_last.inverse();
+
+        return LagrangeEvaluations({
+            vanishing_polynomial: z_n_minus_one,
+            l_first: z_n_minus_one_div_n.mul(inv_first),
+            l_last: z_n_minus_one_div_n.mul(inv_last),
+            zeta_minus_omega_inv: z.sub(dm.group_gen_inv),
+            zeta_omega: z.mul(dm.group_gen)
+        });
     }
 }

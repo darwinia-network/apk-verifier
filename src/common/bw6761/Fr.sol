@@ -18,8 +18,20 @@ library BW6FR {
         return Bw6Fr(0x1ae3a4617c510eac63b05c06ca1493b, 0x1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001);
     }
 
+    function zero() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 0);
+    }
+
     function one() internal pure returns (Bw6Fr memory) {
         return Bw6Fr(0, 1);
+    }
+
+    function two() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 2);
+    }
+
+    function is_zero(Bw6Fr memory self) internal pure returns (bool) {
+        return eq(self, zero());
     }
 
     function is_geq_modulus(Bw6Fr memory self) internal pure returns (bool) {
@@ -85,12 +97,12 @@ library BW6FR {
             div2(fst);
             z = norm(fst);
         } else {
-            Bw6Fr memory rhs = sub(x, y);
+            Bw6Fr memory rhs = gt(x, y) ? sub(x, y) : sub(y, x);
             Bw6Fr[2] memory snd = square_nomod(rhs);
-            Bw6Fr[2] memory r = sub(fst, snd);
-            div2(r);
-            div2(r);
-            z = norm(r);
+            Bw6Fr[2] memory rst = sub(fst, snd);
+            div2(rst);
+            div2(rst);
+            z = norm(rst);
         }
     }
 
@@ -99,6 +111,58 @@ library BW6FR {
         self[1].a = self[1].a >> 1 + self[0].b << 255;
         self[0].b = self[0].b >> 1 + self[0].a << 255;
         self[0].a = self[0].a >> 1;
+    }
+
+    // Constant time inversion using Fermat's little theorem.
+    // For a prime p and for any a < p, a^p = a % p => a^(p-1) = 1 % p => a^(p-2) = a^-1 % p
+    function inverse(Bw6Fr memory self) internal view {
+        Bw6Fr memory r2 = sub(r(), two());
+        uint[9] memory input;
+        input[0] = 0x40;
+        input[1] = 0x40;
+        input[2] = 0x40;
+        input[3] = self.a;
+        input[4] = self.b;
+        input[5] = r2.a;
+        input[6] = r2.b;
+        input[7] = r().a;
+        input[8] = r().b;
+        uint[2] memory output;
+
+        assembly ("memory-safe") {
+            if iszero(staticcall(gas(), MOD_EXP, input, 288, output, 64)) {
+                let p := mload(0x40)
+                returndatacopy(p, 0, returndatasize())
+                revert(p, returndatasize())
+            }
+        }
+
+        self.a = output[0];
+        self.b = output[1];
+    }
+
+    function square(Bw6Fr memory self) internal view {
+        uint[8] memory input;
+        input[0] = 0x40;
+        input[1] = 0x20;
+        input[2] = 0x40;
+        input[3] = self.a;
+        input[4] = self.b;
+        input[5] = 2;
+        input[6] = r().a;
+        input[7] = r().b;
+        uint[2] memory output;
+
+        assembly ("memory-safe") {
+            if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
+                let p := mload(0x40)
+                returndatacopy(p, 0, returndatasize())
+                revert(p, returndatasize())
+            }
+        }
+
+        self.a = output[0];
+        self.b = output[1];
     }
 
     function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory) {
@@ -120,28 +184,6 @@ library BW6FR {
             }
         }
         return [Bw6Fr(output[0], output[1]), Bw6Fr(output[2], output[3])];
-    }
-
-    function square(Bw6Fr memory self) internal view returns (Bw6Fr memory) {
-        uint[8] memory input;
-        input[0] = 0x40;
-        input[1] = 0x20;
-        input[2] = 0x40;
-        input[3] = self.a;
-        input[4] = self.b;
-        input[5] = 2;
-        input[6] = r().a;
-        input[7] = r().b;
-        uint[2] memory output;
-
-        assembly ("memory-safe") {
-            if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
-                let p := mload(0x40)
-                returndatacopy(p, 0, returndatasize())
-                revert(p, returndatasize())
-            }
-        }
-        return Bw6Fr(output[0], output[1]);
     }
 
     function norm(Bw6Fr[2] memory self) internal view returns (Bw6Fr memory) {
