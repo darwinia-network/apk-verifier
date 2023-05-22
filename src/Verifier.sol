@@ -140,8 +140,6 @@ contract Verifier {
         register_evals[5] = proof.register_evaluations.c;
         register_evals[6] = proof.register_evaluations.acc;
         register_evals[7] = proof.q_zeta;
-        require(commitments.length == challenges.nus.length, "!len");
-        require(register_evals.length == challenges.nus.length, "!len");
         // aggregate_claims_multiexp(commitments, register_evals, challenges.nus);
 
     }
