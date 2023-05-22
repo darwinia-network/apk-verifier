@@ -6,12 +6,15 @@ import "./common/PackedProof.sol";
 import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
 import "./common/bw6761/Fr.sol";
+import "./common/pcs/kzg/KZG.sol";
+import "./common/pcs/aggregation/Single.sol";
 import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 
 contract Verifier {
     using BitMask for Bitmask;
     using Lagrange for Bw6Fr;
+    using Single for Bw6G1Affine[];
     using PackedProtocol for SuccinctAccountableRegisterEvaluations;
 
     KeysetCommitment public pks_comm;
@@ -140,8 +143,36 @@ contract Verifier {
         register_evals[5] = proof.register_evaluations.c;
         register_evals[6] = proof.register_evaluations.acc;
         register_evals[7] = proof.q_zeta;
-        // aggregate_claims_multiexp(commitments, register_evals, challenges.nus);
+        (Bw6G1Affine memory w_comm, Bw6Fr memory w_at_zeta) = commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
 
+        // batched KZG openning
+        KzgOpening memory opening_at_zeta = KzgOpening({
+            c: w_comm,
+            x: challenges.zeta,
+            y: w_at_zeta,
+            proof: proof.w_at_zeta_proof
+        });
+        KzgOpening memory opening_at_zeta_omega = KzgOpening({
+            c: r_comm,
+            x: evals_at_zeta.zeta_omega,
+            y: proof.r_zeta_omega,
+            proof: proof.r_at_zeta_omega_proof
+        });
+        KzgOpening[] memory openings = new KzgOpening[](2);
+        openings[0] = opening_at_zeta;
+        openings[1] = opening_at_zeta_omega;
+        Bw6Fr[] memory coeffs = new Bw6Fr[](2);
+        coeffs[0] = BW6FR.one();
+        coeffs[1] = rand1();
+
+    }
+
+    function rand1() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 249329011989041299445135604789887024250);
+    }
+
+    function rand2() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 249329011989041299445135604789887024250);
     }
 
     // funciont evaluate_constraint_polynomials(

@@ -12,7 +12,6 @@ library BW6FR {
 
     uint8 private constant MOD_EXP = 0x05;
 
-
     //! * Scalar field: r = 258664426012969094010652733694893533536393512754914660539884262666720468348340822774968888139573360124440321458177
     function r() internal pure returns (Bw6Fr memory) {
         return Bw6Fr(0x1ae3a4617c510eac63b05c06ca1493b, 0x1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001);
@@ -103,6 +102,17 @@ library BW6FR {
             div2(rst);
             div2(rst);
             z = norm(rst);
+        }
+    }
+
+    function mul(Bw6Fr[] memory xs, Bw6Fr[] memory ys) internal view returns (Bw6Fr memory z) {
+        require(xs.length == ys.length, "!len");
+        uint k = xs.length;
+        z = zero();
+        for (uint i = 0; i < k; i++) {
+            Bw6Fr memory x = xs[i];
+            Bw6Fr memory y = ys[i];
+            z = add(z, mul(x, y));
         }
     }
 
