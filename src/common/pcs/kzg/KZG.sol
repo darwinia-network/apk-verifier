@@ -18,8 +18,9 @@ struct KzgOpening {
 }
 
 library KZG {
-    using BW6G1Affine for Bw6G1Affine;
     using BW6FR for Bw6Fr[];
+    using BW6G1Affine for Bw6G1Affine;
+    using BW6G1Affine for Bw6G1Affine[];
 
     function accumulate(
         KzgOpening[] memory openings,
@@ -38,5 +39,6 @@ library KZG {
             ys[i] = opening.y;
         }
         Bw6Fr memory sum_ry = rs.mul(ys);
+        Bw6G1Affine memory acc = (vk.g1.mul(sum_ry)).sub(accs.msm(rs));
     }
 }

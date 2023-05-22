@@ -9,6 +9,8 @@ struct Bw6G1Affine {
 }
 
 library BW6G1Affine {
+    using BW6FP for Bw6Fp;
+
     // BW6_G1_ADD
     uint private constant G1_ADD = 0x13;
     // BW6_G1_MUL
@@ -21,6 +23,12 @@ library BW6G1Affine {
             BW6FP.zero(),
             BW6FP.zero()
         );
+    }
+
+    /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
+    /// Else, returns `(x, -y)`, where `self = (x, y)`.
+    function neg(Bw6G1Affine memory self) internal pure {
+        self.y.neg();
     }
 
     function add(Bw6G1Affine memory p, Bw6G1Affine memory q) internal view returns (Bw6G1Affine memory) {
@@ -48,6 +56,11 @@ library BW6G1Affine {
         }
 
         return from(output);
+    }
+
+    function sub(Bw6G1Affine memory p, Bw6G1Affine memory q) internal view returns (Bw6G1Affine memory z) {
+        neg(q);
+        z = add(p, q);
     }
 
     function mul(Bw6G1Affine memory p, Bw6Fr memory scalar) internal view returns (Bw6G1Affine memory) {
