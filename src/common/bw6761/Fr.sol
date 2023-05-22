@@ -116,6 +116,7 @@ library BW6FR {
     // Constant time inversion using Fermat's little theorem.
     // For a prime p and for any a < p, a^p = a % p => a^(p-1) = 1 % p => a^(p-2) = a^-1 % p
     function inverse(Bw6Fr memory self) internal view {
+        if (is_zero(self)) return;
         Bw6Fr memory r2 = sub(r(), two());
         uint[9] memory input;
         input[0] = 0x40;
@@ -142,15 +143,23 @@ library BW6FR {
     }
 
     function square(Bw6Fr memory self) internal view {
+        self = pow(self, 2);
+    }
+
+    function pow(Bw6Fr memory base, uint256 exp) internal view returns (Bw6Fr memory) {
+        return mod_exp(base, exp, r());
+    }
+
+    function mod_exp(Bw6Fr memory base, uint256 exp, Bw6Fr memory modulus) internal view returns (Bw6Fr memory) {
         uint[8] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
         input[2] = 0x40;
-        input[3] = self.a;
-        input[4] = self.b;
-        input[5] = 2;
-        input[6] = r().a;
-        input[7] = r().b;
+        input[3] = base.a;
+        input[4] = base.b;
+        input[5] = exp;
+        input[6] = modulus.a;
+        input[7] = modulus.b;
         uint[2] memory output;
 
         assembly ("memory-safe") {
@@ -161,8 +170,7 @@ library BW6FR {
             }
         }
 
-        self.a = output[0];
-        self.b = output[1];
+        return Bw6Fr(output[0], output[1]);
     }
 
     function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory) {
@@ -208,5 +216,19 @@ library BW6FR {
             }
         }
         return Bw6Fr(output[0], output[1]);
+    }
+
+    /// (max_exp+1)-sized vec: 1, base, base^2,... ,base^{max_exp}
+    function powers(Bw6Fr memory base, uint256 max_exp) internal view returns (Bw6Fr[] memory) {
+        uint cap = max_exp + 1;
+        Bw6Fr[] memory r = new Bw6Fr[](cap);
+        r[0] = one();
+        if (max_exp > 0) {
+            r[1] = base;
+        }
+        for (uint i = 2; i < cap; i++) {
+            r[i] = pow(base, i);
+        }
+        return r;
     }
 }

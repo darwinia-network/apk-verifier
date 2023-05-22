@@ -70,8 +70,8 @@ contract Verifier {
         PackedProof calldata proof
     ) internal view returns (bool) {
         Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
-        challenges.zeta.lagrange_evaluations(domain());
-        // 3. validate_evaluations
+        LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
+        validate_evaluations(proof, challenges, evals_at_zeta);
         // 4. evaluate_constraint_polynomials
         // 5. w = horner_field
         // 6. proof.r_zeta_omega + w == proof.q_zeta * evals_at_zeta.vanishing_polynomial
@@ -108,12 +108,11 @@ contract Verifier {
         // nus: 325921140606714040130243320654852173932
     }
 
-    // function validate_evaluations(
-    //     PackedProof calldata proof,
-    //     Challenges memory challenges,
-    //     TranscriptRng memory fsrng,
-    //     LagrangeEvaluations memory evals_at_zeta
-    // ) internal pure {}
+    function validate_evaluations(
+        PackedProof calldata proof,
+        Challenges memory challenges,
+        LagrangeEvaluations memory evals_at_zeta
+    ) internal pure {}
 
     // funciont evaluate_constraint_polynomials(
     //     G1Affine memory apk,
