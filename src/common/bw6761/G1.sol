@@ -9,6 +9,8 @@ struct Bw6G1Affine {
 }
 
 library BW6G1Affine {
+    // BW6_G1_ADD
+    uint private constant G1_ADD = 0x13;
     // BW6_G1_MUL
     uint8 private constant G1_MUL = 0x14;
 
@@ -19,14 +21,41 @@ library BW6G1Affine {
         );
     }
 
-    function mul(Bw6G1Affine memory self, Bw6Fr memory scalar) internal pure {
+    function add(Bw6G1Affine memory p, Bw6G1Affine memory q) internal view returns (Bw6G1Affine memory) {
+        uint[12] memory input;
+        input[0]  = p.x.a;
+        input[1]  = p.x.b;
+        input[2]  = p.x.c;
+        input[3]  = p.y.a;
+        input[4]  = p.y.b;
+        input[5]  = p.y.c;
+        input[6]  = q.x.a;
+        input[7]  = q.x.b;
+        input[8]  = q.x.c;
+        input[9]  = q.y.a;
+        input[10] = q.y.b;
+        input[11] = q.y.c;
+        uint[6] memory output;
+
+        assembly ("memory-safe") {
+            if iszero(staticcall(gas(), G1_ADD, input, 384, output, 192)) {
+                let pt := mload(0x40)
+                returndatacopy(pt, 0, returndatasize())
+                revert(pt, returndatasize())
+            }
+        }
+
+        return from(output);
+    }
+
+    function mul(Bw6G1Affine memory p, Bw6Fr memory scalar) internal view returns (Bw6G1Affine memory) {
         uint[8] memory input;
-        input[0] = self.x.a;
-        input[1] = self.x.b;
-        input[2] = self.x.c;
-        input[3] = self.y.a;
-        input[4] = self.y.b;
-        input[5] = self.y.c;
+        input[0] = p.x.a;
+        input[1] = p.x.b;
+        input[2] = p.x.c;
+        input[3] = p.y.a;
+        input[4] = p.y.b;
+        input[5] = p.y.c;
         input[6] = scalar.a;
         input[7] = scalar.b;
         uint[6] memory output;
@@ -39,11 +68,13 @@ library BW6G1Affine {
             }
         }
 
-        self.x.a = output[0];
-        self.x.b = output[1];
-        self.x.c = output[2];
-        self.y.a = output[3];
-        self.y.b = output[4];
-        self.y.c = output[5];
+        return from(output);
+    }
+
+    function from(uint[6] memory x) internal pure returns (Bw6G1Affine memory) {
+        return Bw6G1Affine(
+            Bw6Fp(x[0], x[1], x[2]),
+            Bw6Fp(x[3], x[4], x[5])
+        );
     }
 }
