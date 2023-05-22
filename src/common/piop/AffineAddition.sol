@@ -15,12 +15,17 @@ struct AffineAdditionEvaluations {
 }
 
 library BasicProtocol {
+    using BW6FR for Bw6Fr;
+    using BW6G1Affine for Bw6G1Affine;
+
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
         Bw6Fr memory phi,
-        Bw6Fr memory zeta_minus_omega,
+        Bw6Fr memory zeta_minus_omega_inv,
         Bw6G1Affine[2] memory commitments
-    ) internal view {
+    ) internal view returns (
+        Bw6G1Affine memory
+    ) {
         Bw6Fr memory b = self.bitmask;
         Bw6Fr memory x1 = self.partial_sums[0];
         Bw6Fr memory y1 = self.partial_sums[1];
@@ -35,6 +40,30 @@ library BasicProtocol {
         // X3 term = b(x1-x2)^2 + b(y1-y2)phi + (1-b)phi
         // Y3 term = (1-b) + b(x1-x2)phi
         // ...and both multiplied by (\zeta - \omega^{n-1}) // = zeta_minus_omega_inv
-        
+        r_comm = r_comm.add(
+            commitments[0].mul(
+                zeta_minus_omega_inv.mul(
+                    (
+                        b.mul(x1.sub(x2)).mul(x1.sub(x2))
+                    ).add(
+                        b.mul(y1.sub(y2)).mul(phi)
+                    ).add(
+                        (BW6FR.one().sub(b)).mul(phi)
+                    )
+                )
+            )
+        );
+        r_comm = r_comm.add(
+            commitments[1].mul(
+                zeta_minus_omega_inv.mul(
+                    (
+                        BW6FR.one().sub(b)
+                    ).add(
+                        b.mul(x1.sub(x2)).mul(phi)
+                    )
+                )
+            )
+        );
+        return r_comm;
     }
 }
