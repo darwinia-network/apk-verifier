@@ -221,14 +221,14 @@ library BW6FR {
     /// (max_exp+1)-sized vec: 1, base, base^2,... ,base^{max_exp}
     function powers(Bw6Fr memory base, uint256 max_exp) internal view returns (Bw6Fr[] memory) {
         uint cap = max_exp + 1;
-        Bw6Fr[] memory r = new Bw6Fr[](cap);
-        r[0] = one();
+        Bw6Fr[] memory result = new Bw6Fr[](cap);
+        result[0] = one();
         if (max_exp > 0) {
-            r[1] = base;
+            result[1] = base;
         }
         for (uint i = 2; i < cap; i++) {
-            r[i] = pow(base, i);
+            result[i] = pow(base, i);
         }
-        return r;
+        return result;
     }
 }
