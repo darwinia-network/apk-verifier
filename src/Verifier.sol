@@ -12,10 +12,11 @@ import "./common/poly/evaluations/Lagrange.sol";
 contract Verifier {
     using BitMask for Bitmask;
     using Lagrange for Bw6Fr;
+    using PackedProtocol for SuccinctAccountableRegisterEvaluations;
 
     KeysetCommitment public pks_comm;
 
-    uint256 internal constant LOG_N = 8;
+    uint32 internal constant LOG_N = 8;
     uint256 internal constant POLYS_OPENED_AT_ZETA = 8;
 
     struct Challenges {
@@ -28,6 +29,7 @@ contract Verifier {
     constructor(KeysetCommitment memory c0) {
         pks_comm.pks_comm[0] = c0.pks_comm[0];
         pks_comm.pks_comm[1] = c0.pks_comm[1];
+        pks_comm.log_domain_size = LOG_N;
     }
 
     // size: 256
@@ -42,7 +44,7 @@ contract Verifier {
     function domain() internal pure returns (Radix2EvaluationDomain memory) {
         return Radix2EvaluationDomain({
            size: 256,
-           log_size_of_group: 8,
+           log_size_of_group: LOG_N,
            size_as_field_element: Bw6Fr(0, 256),
            size_inv: Bw6Fr(0x1ac8c0bd1ad4bd9db74cabaac34a7f1, 0xdf08b7190df41e7b8fd46ecd8a4f3eb816f451e6ebd000008483b74000000001),
            group_gen: Bw6Fr(0x1002f29b90f34d050aca1e5fa3f7633, 0x712d6bc0d484c501aed11a0c88d9f8c87a0c14230db0b91cb42b84a2dce33f04),
@@ -112,7 +114,37 @@ contract Verifier {
         PackedProof calldata proof,
         Challenges memory challenges,
         LagrangeEvaluations memory evals_at_zeta
-    ) internal pure {}
+    ) internal view {
+        // Reconstruct the commitment to the linearization polynomial using the commitments to the registers from the proof.
+        // linearization polynomial commitment
+        Bw6G1Affine memory r_comm = proof.register_evaluations.restore_commitment_to_linearization_polynomial(challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments, proof.additional_commitments);
+
+        // Aggregate the commitments to be opened in \zeta, using the challenge \nu.
+        // aggregate evaluation claims in zeta
+        Bw6G1Affine[] memory commitments = new Bw6G1Affine[](8);
+        commitments[0] = pks_comm.pks_comm[0];
+        commitments[1] = pks_comm.pks_comm[1];
+        commitments[2] = proof.register_commitments.bitmask;
+        commitments[3] = proof.register_commitments.partial_sums[0];
+        commitments[4] = proof.register_commitments.partial_sums[1];
+        commitments[5] = proof.additional_commitments.c_comm;
+        commitments[6] = proof.additional_commitments.acc_comm;
+        commitments[7] = proof.q_comm;
+        // ...together with the corresponding values
+        Bw6Fr[] memory register_evals = new Bw6Fr[](8);
+        register_evals[0] = proof.register_evaluations.basic_evaluations.keyset[0];
+        register_evals[1] = proof.register_evaluations.basic_evaluations.keyset[1];
+        register_evals[2] = proof.register_evaluations.basic_evaluations.bitmask;
+        register_evals[3] = proof.register_evaluations.basic_evaluations.partial_sums[0];
+        register_evals[4] = proof.register_evaluations.basic_evaluations.partial_sums[1];
+        register_evals[5] = proof.register_evaluations.c;
+        register_evals[6] = proof.register_evaluations.acc;
+        register_evals[7] = proof.q_zeta;
+        require(commitments.length == challenges.nus.length, "!len");
+        require(register_evals.length == challenges.nus.length, "!len");
+        // aggregate_claims_multiexp(commitments, register_evals, challenges.nus);
+
+    }
 
     // funciont evaluate_constraint_polynomials(
     //     G1Affine memory apk,
