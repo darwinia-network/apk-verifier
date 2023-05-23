@@ -13,6 +13,7 @@ import "./common/poly/evaluations/Lagrange.sol";
 
 contract Verifier {
     using BW6FR for Bw6Fr;
+    using BW6FR for Bw6Fr[];
     using Lagrange for Bw6Fr;
     using BitMask for Bitmask;
     using Single for Bw6G1Affine[];
@@ -87,8 +88,8 @@ contract Verifier {
             public_input.bitmask,
             domain().size
         );
-        Bw6Fr memory w = horner_field(constraint_polynomial_evals, challenges.phi);
-        // 6. proof.r_zeta_omega + w == proof.q_zeta * evals_at_zeta.vanishing_polynomial
+        Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
+        (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
     function restore_challenges(
@@ -189,5 +190,4 @@ contract Verifier {
     function kzg_pvk() public pure returns (RVK memory) {
         return KZGParams.raw_vk();
     }
-
 }

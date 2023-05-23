@@ -252,12 +252,12 @@ library BW6FR {
         return result;
     }
 
-    function horner_field(Bw6Fr memory bases, Bw6Fr memory nu) internal view returns (Bw6Fr memory) {
+    function horner_field(Bw6Fr[] memory bases, Bw6Fr memory nu) internal view returns (Bw6Fr memory) {
         Bw6Fr memory acc = zero();
         uint k = bases.length;
         for (uint i = 0; i < k; i++) {
             Bw6Fr memory b = bases[k-i-1];
-            acc = add(acc.mul(nu), b);
+            acc = add(mul(acc, nu), b);
         }
         return acc;
     }
