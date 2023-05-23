@@ -105,7 +105,15 @@ library BW6FR {
         }
     }
 
-    function mul(Bw6Fr[] memory xs, Bw6Fr[] memory ys) internal view returns (Bw6Fr memory z) {
+    function sum(Bw6Fr[] memory xs) internal pure returns (Bw6Fr memory) {
+        Bw6Fr memory s = zero();
+        for (uint i = 0; i < xs.length; i++) {
+            s = add(s, xs[i]);
+        }
+        return s;
+    }
+
+    function mul_sum(Bw6Fr[] memory xs, Bw6Fr[] memory ys) internal view returns (Bw6Fr memory z) {
         require(xs.length == ys.length, "!len");
         uint k = xs.length;
         z = zero();
@@ -125,8 +133,8 @@ library BW6FR {
 
     // Constant time inversion using Fermat's little theorem.
     // For a prime p and for any a < p, a^p = a % p => a^(p-1) = 1 % p => a^(p-2) = a^-1 % p
-    function inverse(Bw6Fr memory self) internal view {
-        if (is_zero(self)) return;
+    function inverse(Bw6Fr memory self) internal view returns (Bw6Fr memory) {
+        if (is_zero(self)) return self;
         Bw6Fr memory r2 = sub(r(), two());
         uint[9] memory input;
         input[0] = 0x40;
@@ -150,6 +158,8 @@ library BW6FR {
 
         self.a = output[0];
         self.b = output[1];
+
+        return self;
     }
 
     function square(Bw6Fr memory self) internal view {

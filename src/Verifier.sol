@@ -12,8 +12,10 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 
 contract Verifier {
-    using BitMask for Bitmask;
+    using BW6FR for Bw6Fr;
+    using BW6FR for Bw6Fr[];
     using Lagrange for Bw6Fr;
+    using BitMask for Bitmask;
     using Single for Bw6G1Affine[];
     using KZG for KzgOpening[];
     using KZG for AccumulatedOpening;
@@ -79,7 +81,7 @@ contract Verifier {
         Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
         validate_evaluations(proof, challenges, evals_at_zeta);
-        // 4. evaluate_constraint_polynomials
+        // evaluate_constraint_polynomials
         // 5. w = horner_field
         // 6. proof.r_zeta_omega + w == proof.q_zeta * evals_at_zeta.vanishing_polynomial
     }
@@ -167,8 +169,8 @@ contract Verifier {
         coeffs[0] = BW6FR.one();
         coeffs[1] = rand1();
         AccumulatedOpening memory acc_opening = openings.accumulate(coeffs, kzg_pvk());
-        // KZG verification
-        acc_opening.verify_accumulated(kzg_pvk());
+        // KZG verification, lazy subgroup check
+        require(acc_opening.verify_accumulated(kzg_pvk()), "!KZG verification");
     }
 
     function rand1() internal pure returns (Bw6Fr memory) {
@@ -183,13 +185,51 @@ contract Verifier {
         return KZGParams.raw_vk();
     }
 
-    // funciont evaluate_constraint_polynomials(
-    //     G1Affine memory apk,
-    //     LagrangeEvaluations memory evals_at_zeta,
-    //     uint challenges_r,
-    //     Bitmask memory bitmask,
-    //     uint domain_size
-    // ) internal pure returns (
-    //     Fr[] memory constraint_polynomial_evals
-    // ) {}
+    function evaluate_constraint_polynomials(
+        SuccinctAccountableRegisterEvaluations memory self,
+        Bw6G1Affine memory apk,
+        LagrangeEvaluations memory evals_at_zeta,
+        Bw6Fr memory r,
+        Bitmask memory bitmask,
+        uint64 domain_size
+    ) internal view returns (
+        Bw6Fr[] memory constraint_polynomial_evals
+    ) {
+        uint bits_in_bitmask_chunk = 256;
+        require(domain_size % bits_in_bitmask_chunk == 0, "!domain_size");
+        uint chunks_in_bitmask = domain_size / bits_in_bitmask_chunk;
+        require(bitmask.limbs.length == chunks_in_bitmask);
+        Bw6Fr memory bits_in_bitmask_chunk_inv = Bw6Fr(0, 256);
+        bits_in_bitmask_chunk_inv.inverse();
+
+        Bw6Fr[] memory powers_of_r = r.powers(chunks_in_bitmask - 1);
+        Bw6Fr memory r_pow_m = r.mul(powers_of_r[powers_of_r.length - 1]);
+        Bw6Fr[] memory bitmask_chunks = new Bw6Fr[](chunks_in_bitmask);
+        for (uint i = 0; i < chunks_in_bitmask; i++) {
+            bitmask_chunks[i] = Bw6Fr(0, bitmask.limbs[i]);
+        }
+        require(powers_of_r.length == bitmask_chunks.length, "!len");
+        Bw6Fr memory aggregated_bitmask = bitmask_chunks.mul_sum(powers_of_r);
+
+        // A(zw) as fraction
+        Bw6Fr memory zeta_omega_pow_m = evals_at_zeta.zeta_omega.pow(chunks_in_bitmask);
+        Bw6Fr memory zeta_omega_pow_n = zeta_omega_pow_m.pow(bits_in_bitmask_chunk);
+        Bw6Fr memory a_zeta_omega1 = bits_in_bitmask_chunk_inv.mul(zeta_omega_pow_n.sub(BW6FR.one())).mul((zeta_omega_pow_m.sub(BW6FR.one())).inverse());
+
+        // A(zw) as polynomial
+        Bw6Fr memory a_zeta_omega2 = bits_in_bitmask_chunk_inv.mul(
+            zeta_omega_pow_m.powers(bits_in_bitmask_chunk - 1).sum()
+        );
+
+        require(a_zeta_omega1.eq(a_zeta_omega2), "!zeta_omega");
+        Bw6Fr memory two = BW6FR.two();
+        Bw6Fr memory a = two.add(
+            r.mul(
+                (two.pow(255).sub(two)).mul(a_zeta_omega1)
+            )
+        );
+        Bw6Fr memory b = self.basic_evaluations.bitmask;
+        Bw6Fr memory acc = self.acc;
+        Bw6Fr memory c = self.c;
+    }
 }

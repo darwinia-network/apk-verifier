@@ -41,7 +41,7 @@ library KZG {
             proofs[i] = opening.proof;
             ys[i] = opening.y;
         }
-        Bw6Fr memory sum_ry = rs.mul(ys);
+        Bw6Fr memory sum_ry = rs.mul_sum(ys);
         Bw6G1Affine memory acc = (vk.g1.mul(sum_ry)).sub(accs.msm(rs));
         Bw6G1Affine memory proof = proofs.msm(rs);
         return AccumulatedOpening(acc, proof);
