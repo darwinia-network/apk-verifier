@@ -15,6 +15,8 @@ contract Verifier {
     using BitMask for Bitmask;
     using Lagrange for Bw6Fr;
     using Single for Bw6G1Affine[];
+    using KZG for KzgOpening[];
+    using KZG for AccumulatedOpening;
     using PackedProtocol for SuccinctAccountableRegisterEvaluations;
 
     KeysetCommitment public pks_comm;
@@ -164,7 +166,9 @@ contract Verifier {
         Bw6Fr[] memory coeffs = new Bw6Fr[](2);
         coeffs[0] = BW6FR.one();
         coeffs[1] = rand1();
-
+        AccumulatedOpening memory acc_opening = openings.accumulate(coeffs, kzg_pvk());
+        // KZG verification
+        acc_opening.verify_accumulated(kzg_pvk());
     }
 
     function rand1() internal pure returns (Bw6Fr memory) {
@@ -173,6 +177,10 @@ contract Verifier {
 
     function rand2() internal pure returns (Bw6Fr memory) {
         return Bw6Fr(0, 249329011989041299445135604789887024250);
+    }
+
+    function kzg_pvk() public pure returns (RVK memory) {
+        return KZGParams.raw_vk();
     }
 
     // funciont evaluate_constraint_polynomials(
