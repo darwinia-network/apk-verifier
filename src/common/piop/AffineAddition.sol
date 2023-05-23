@@ -2,6 +2,8 @@ pragma solidity ^0.8.17;
 
 import "../bw6761/G1.sol";
 import "../bw6761/Fr.sol";
+import "../bls12377/G1.sol";
+import "../poly/evaluations/Lagrange.sol";
 
 struct PartialSumsAndBitmaskCommitments {
     Bw6G1Affine[2] partial_sums;
@@ -16,7 +18,9 @@ struct AffineAdditionEvaluations {
 
 library BasicProtocol {
     using BW6FR for Bw6Fr;
+    using BLS12FP for Bls12Fp;
     using BW6G1Affine for Bw6G1Affine;
+    using BLS12G1 for Bls12G1Affine;
 
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
@@ -65,5 +69,99 @@ library BasicProtocol {
             )
         );
         return r_comm;
+    }
+
+    function evaluate_constraint_polynomials(
+        AffineAdditionEvaluations memory self,
+        Bls12G1Affine memory apk,
+        LagrangeEvaluations memory evals_at_zeta
+    ) internal view returns (
+        Bw6Fr memory,
+        Bw6Fr memory,
+        Bw6Fr memory,
+        Bw6Fr memory,
+        Bw6Fr memory
+    ) {
+        Bw6Fr memory b = self.bitmask;
+        Bw6Fr memory x1 = self.partial_sums[0];
+        Bw6Fr memory y1 = self.partial_sums[1];
+        Bw6Fr memory x2 = self.keyset[0];
+        Bw6Fr memory y2 = self.keyset[1];
+
+        (Bw6Fr memory a1, Bw6Fr memory a2) = evaluate_conditional_affine_addition_constraints_linearized(
+            evals_at_zeta.zeta_minus_omega_inv,
+            b,
+            x1,
+            y1,
+            x2,
+            y2
+        );
+        Bw6Fr memory a3 = evaluate_bitmask_booleanity_constraint(b);
+        (Bw6Fr memory a4, Bw6Fr memory a5) = evaluate_public_inputs_constraints(
+            apk,
+            evals_at_zeta,
+            x1,
+            y1
+        );
+        return (a1, a2, a3, a4, a5);
+    }
+
+    function evaluate_conditional_affine_addition_constraints_linearized(
+        Bw6Fr memory zeta_minus_omega_inv,
+        Bw6Fr memory b,
+        Bw6Fr memory x1,
+        Bw6Fr memory y1,
+        Bw6Fr memory x2,
+        Bw6Fr memory y2
+    ) internal view returns (
+        Bw6Fr memory,
+        Bw6Fr memory
+    ) {
+        Bw6Fr memory x3 = BW6FR.zero();
+        Bw6Fr memory y3 = BW6FR.zero();
+        Bw6Fr memory one = BW6FR.one();
+
+        Bw6Fr memory c1 = (b.mul(
+            ((x1.sub(x2)).mul(x1.sub(x2)).mul(x1.add(x2).add(x3))).sub((y2.sub(y1)).mul(y2.sub(y1)))
+        )).add((one.sub(b)).mul(y3.sub(y1)));
+
+        Bw6Fr memory c2 = (b.mul(
+            ((x1.sub(x2)).mul(y3.add(y1)).sub((y2.sub(y1)).mul(x3.sub(x1))))
+        )).add((one.sub(b)).mul(x3.sub(x1)));
+
+        return (c1.mul(zeta_minus_omega_inv), c2.mul(zeta_minus_omega_inv));
+    }
+
+    function evaluate_bitmask_booleanity_constraint(
+        Bw6Fr memory bitmask_at_zeta
+    ) internal view returns (
+        Bw6Fr memory
+    ) {
+        return bitmask_at_zeta.mul(BW6FR.one().sub(bitmask_at_zeta));
+    }
+
+    function evaluate_public_inputs_constraints(
+        Bls12G1Affine memory apk,
+        LagrangeEvaluations memory evals_at_zeta,
+        Bw6Fr memory x1,
+        Bw6Fr memory y1
+    ) internal view returns (
+        Bw6Fr memory,
+        Bw6Fr memory
+    ) {
+        Bls12G1Affine memory h = BLS12G1.point_in_g1_complement();
+        Bls12G1Affine memory apk_plus_h = h.add(apk);
+        Bw6Fr memory hx = h.x.into();
+        Bw6Fr memory hy = h.y.into();
+        Bw6Fr memory px = apk_plus_h.x.into();
+        Bw6Fr memory py = apk_plus_h.y.into();
+
+        Bw6Fr memory c1 = ((x1.sub(hx)).mul(evals_at_zeta.l_first)).add(
+            (x1.sub(px)).mul(evals_at_zeta.l_last)
+        );
+        Bw6Fr memory c2 = ((y1.sub(hy)).mul(evals_at_zeta.l_first)).add(
+            (y1.sub(py)).mul(evals_at_zeta.l_last)
+        );
+        return (c1, c2);
     }
 }
