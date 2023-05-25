@@ -80,7 +80,7 @@ contract Verifier {
         Bls12G1Affine memory aggregate_public_key,
         Bls12G2Affine memory aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    )
+    ) internal view {}
 
     function verify_packed(
         AccountablePublicInput calldata public_input,

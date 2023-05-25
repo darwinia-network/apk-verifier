@@ -28,6 +28,14 @@ library BW6G1Affine {
         );
     }
 
+    function is_zero(Bw6G1Affine memory p) internal pure returns (bool) {
+        return p.x.is_zero() && p.y.is_zero();
+    }
+
+    function is_infinity(Bw6G1Affine memory p) internal pure returns (bool) {
+        return is_zero(p);
+    }
+
     /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
     /// Else, returns `(x, -y)`, where `self = (x, y)`.
     function neg(Bw6G1Affine memory self) internal pure {
@@ -131,7 +139,9 @@ library BW6G1Affine {
             r = new bytes(96);
             r[95] = INFINITY_FLAG;
         } else {
-            bool y_flag = g1.y.gt(g1.y.neg());
+            Bw6Fp memory neg_y = g1.y;
+            neg_y.neg();
+            bool y_flag = g1.y.gt(neg_y);
             r = g1.x.serialize();
             if (y_flag) {
                 r[95] |= Y_IS_NEGATIVE;

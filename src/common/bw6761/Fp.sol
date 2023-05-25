@@ -85,4 +85,21 @@ library BW6FP {
             (      , z.a) = m.a.sbb(y.a, borrow);
         }
     }
+
+    function serialize(Bw6Fp memory x) internal pure returns (bytes memory) {
+        bytes memory r = new bytes(96);
+        bytes32 a = bytes32(x.a);
+        bytes32 b = bytes32(x.b);
+        bytes32 c = bytes32(x.c);
+        for (uint i = 0; i < 32; i++) {
+            r[i] = c[31-i];
+        }
+        for (uint j = 0; j < 32; j++) {
+            r[32+j] = b[31-j];
+        }
+        for (uint k = 0; k < 32; k++) {
+            r[64+k] = a[31-k];
+        }
+        return r;
+    }
 }
