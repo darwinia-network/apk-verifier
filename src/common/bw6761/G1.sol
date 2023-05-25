@@ -18,6 +18,9 @@ library BW6G1Affine {
     // BW6_G1_MULTIEXP
     uint8 private constant G1_MULTIEXP = 0x15;
 
+    bytes1 private constant INFINITY_FLAG = bytes1(0x40);
+    bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);
+
     function zero() internal pure returns (Bw6G1Affine memory) {
         return Bw6G1Affine(
             BW6FP.zero(),
@@ -121,5 +124,18 @@ library BW6G1Affine {
             Bw6Fp(x[0], x[1], x[2]),
             Bw6Fp(x[3], x[4], x[5])
         );
+    }
+
+    function serialize(Bw6G1Affine memory g1) internal pure returns (bytes memory r) {
+        if (is_infinity(g1)) {
+            r = new bytes(96);
+            r[95] = INFINITY_FLAG;
+        } else {
+            bool y_flag = g1.y.gt(g1.y.neg());
+            r = g1.x.serialize();
+            if (y_flag) {
+                r[95] |= Y_IS_NEGATIVE;
+            }
+        }
     }
 }

@@ -65,14 +65,22 @@ contract Verifier {
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
         PackedProof calldata proof,
-        Signature calldata aggregate_signature,
+        Bls12G2Affine calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
     ) external view {
         uint n_signers = public_input.bitmask.count_ones();
+        // apk proof verification
         verify_packed(public_input, proof);
-        // 2. verify_bls
+        // aggregate BLS signature verification
+        verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment);
         // 3. check threhold
     }
+
+    function verify_bls(
+        Bls12G1Affine memory aggregate_public_key,
+        Bls12G2Affine memory aggregate_signature,
+        KeysetCommitment calldata new_validator_set_commitment
+    )
 
     function verify_packed(
         AccountablePublicInput calldata public_input,
