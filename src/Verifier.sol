@@ -26,6 +26,7 @@ contract Verifier {
     KeysetCommitment public pks_comm;
 
     uint32 internal constant LOG_N = 8;
+    uint256 internal constant QUORUM = 171;
     uint256 internal constant POLYS_OPENED_AT_ZETA = 8;
 
     struct Challenges {
@@ -35,7 +36,7 @@ contract Verifier {
         Bw6Fr[] nus;
     }
 
-    constructor(KeysetCommitment memory c0) {
+    constructor(Bw6G1Affine[2] memory c0) {
         pks_comm.pks_comm[0] = c0.pks_comm[0];
         pks_comm.pks_comm[1] = c0.pks_comm[1];
         pks_comm.log_domain_size = LOG_N;
@@ -75,7 +76,8 @@ contract Verifier {
         verify_packed(public_input, proof);
         // aggregate BLS signature verification
         verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment);
-        // 3. check threhold
+        // check threhold
+        require(n_signers >= QUORUM, "!quorum");
     }
 
     function verify_bls(
