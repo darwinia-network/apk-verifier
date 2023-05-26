@@ -57,6 +57,6 @@ library KZG {
         Bw6G2Affine[] memory b = new Bw6G2Affine[](2);
         b[0] = vk.g2;
         b[1] = vk.tau_in_g2;
-        BW6Pairing.pairing(a, b);
+        return BW6Pairing.pairing(a, b);
     }
 }

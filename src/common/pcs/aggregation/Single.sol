@@ -18,7 +18,6 @@ library Single {
     ) {
         require(cs.length == rs.length, "!len");
         require(ys.length == rs.length, "!len");
-        uint k = cs.length;
         Bw6G1Affine memory agg_c = cs.msm(rs);
         Bw6Fr memory agg_y = ys.mul_sum(rs);
         return (agg_c, agg_y);

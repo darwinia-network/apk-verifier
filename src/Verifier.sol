@@ -37,8 +37,8 @@ contract Verifier {
     }
 
     constructor(Bw6G1Affine[2] memory c0) {
-        pks_comm.pks_comm[0] = c0.pks_comm[0];
-        pks_comm.pks_comm[1] = c0.pks_comm[1];
+        pks_comm.pks_comm[0] = c0[0];
+        pks_comm.pks_comm[1] = c0[1];
         pks_comm.log_domain_size = LOG_N;
     }
 
@@ -73,9 +73,9 @@ contract Verifier {
     ) external view {
         uint n_signers = public_input.bitmask.count_ones();
         // apk proof verification
-        verify_packed(public_input, proof);
+        require(verify_packed(public_input, proof), "!apk");
         // aggregate BLS signature verification
-        verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment);
+        require(verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment), "!bls");
         // check threhold
         require(n_signers >= QUORUM, "!quorum");
     }
@@ -84,10 +84,10 @@ contract Verifier {
         Bls12G1Affine memory aggregate_public_key,
         Bls12G2Affine memory aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    ) internal view {
+    ) internal view returns (bool) {
         require(pks_comm.log_domain_size == new_validator_set_commitment.log_domain_size, "!log_n");
         Bls12G2Affine memory message = new_validator_set_commitment.hash_commitment();
-        require(BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message), "!BLS");
+        return BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message);
     }
 
     function verify_packed(
@@ -105,7 +105,7 @@ contract Verifier {
             domain().size
         );
         Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
-        (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
+        return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
     function restore_challenges(

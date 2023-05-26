@@ -16,6 +16,7 @@ library KeySet {
         bytes memory x = self.pks_comm[0].serialize();
         bytes memory y = self.pks_comm[1].serialize();
         bytes memory s = to_little_endian_32(self.log_domain_size);
+        return abi.encodePacked(x, y, s);
     }
 
     function hash_commitment(KeysetCommitment  memory self) internal view returns (Bls12G2Affine memory) {
