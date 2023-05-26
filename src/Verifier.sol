@@ -19,6 +19,7 @@ contract Verifier {
     using Single for Bw6G1Affine[];
     using KZG for KzgOpening[];
     using KZG for AccumulatedOpening;
+    using KeySet for KeysetCommitment;
     using PackedProtocol for SuccinctAccountableRegisterEvaluations;
 
     KeysetCommitment public pks_comm;
@@ -80,7 +81,10 @@ contract Verifier {
         Bls12G1Affine memory aggregate_public_key,
         Bls12G2Affine memory aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    ) internal view {}
+    ) internal view {
+        require(pks_comm.log_domain_size == new_validator_set_commitment.log_domain_size, "!log_n");
+        Bls12G2Affine memory message = new_validator_set_commitment.hash_commitment();
+    }
 
     function verify_packed(
         AccountablePublicInput calldata public_input,
