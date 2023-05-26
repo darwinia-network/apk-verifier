@@ -11,6 +11,20 @@ library BLS12G1 {
     // BLS12_377_G1ADD
     uint private constant G1_ADD = 0x13;
 
+    function generator() internal pure returns (Bls12G1Affine memory) {
+        return Bls12G1Affine({
+            x: Bls12Fp(0x8848defe740a67c8fc6225bf87ff54, 0x85951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef),
+            y: Bls12Fp(0x1914a69c5102eff1f674f5d30afeec4, 0xbd7fb348ca3e52d96d182ad44fb82305c2fe3d3634a9591afd82de55559c8ea6)
+        });
+    }
+
+    function neg_generator() internal pure returns (Bls12G1Affine memory) {
+        return Bls12G1Affine({
+            x: Bls12Fp(0x8848defe740a67c8fc6225bf87ff54, 0x85951e2caa9d41bb188282c8bd37cb5cd5481512ffcd394eeab9b16eb21be9ef),
+            y: Bls12Fp(0x1cefdc52b4e1eba6d3b6633bf15a76, 0x5ca326aa36b6c0b5b1db375b6a5124fa540d200dfb56a6e58785e1aaaa63715b)
+        });
+    }
+
     function point_in_g1_complement() internal pure returns (Bls12G1Affine memory) {
         return Bls12G1Affine({
             x: Bls12Fp(0, 0),

@@ -5,6 +5,7 @@ import "./common/KeySet.sol";
 import "./common/PackedProof.sol";
 import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
+import "./common/bls12377/Pairing.sol";
 import "./common/bw6761/Fr.sol";
 import "./common/pcs/kzg/KZG.sol";
 import "./common/pcs/aggregation/Single.sol";
@@ -84,6 +85,7 @@ contract Verifier {
     ) internal view {
         require(pks_comm.log_domain_size == new_validator_set_commitment.log_domain_size, "!log_n");
         Bls12G2Affine memory message = new_validator_set_commitment.hash_commitment();
+        require(BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message), "!BLS");
     }
 
     function verify_packed(
