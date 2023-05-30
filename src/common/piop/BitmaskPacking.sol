@@ -8,8 +8,8 @@ import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
 struct BitmaskPackingCommitments {
-    Bw6G1Affine c_comm;
-    Bw6G1Affine acc_comm;
+    Bw6G1 c_comm;
+    Bw6G1 acc_comm;
 }
 
 struct SuccinctAccountableRegisterEvaluations {
@@ -21,7 +21,7 @@ struct SuccinctAccountableRegisterEvaluations {
 library PackedProtocol {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
-    using BW6G1Affine for Bw6G1Affine;
+    using BW6G1Affine for Bw6G1;
     using BasicProtocol for AffineAdditionEvaluations;
 
     function restore_commitment_to_linearization_polynomial(
@@ -31,10 +31,10 @@ library PackedProtocol {
         PartialSumsAndBitmaskCommitments memory commitments,
         BitmaskPackingCommitments memory extra_commitments
     ) internal view returns (
-        Bw6G1Affine memory
+        Bw6G1 memory
     ) {
         Bw6Fr[] memory powers_of_phi = phi.powers(6);
-        Bw6G1Affine memory r_comm = self.basic_evaluations.restore_commitment_to_linearization_polynomial(phi, zeta_minus_omega_inv, commitments.partial_sums);
+        Bw6G1 memory r_comm = self.basic_evaluations.restore_commitment_to_linearization_polynomial(phi, zeta_minus_omega_inv, commitments.partial_sums);
         r_comm = r_comm.add(
             extra_commitments.acc_comm.mul(powers_of_phi[5])
         );
@@ -46,7 +46,7 @@ library PackedProtocol {
 
     function evaluate_constraint_polynomials(
         SuccinctAccountableRegisterEvaluations memory self,
-        Bls12G1Affine memory apk,
+        Bls12G1 memory apk,
         LagrangeEvaluations memory evals_at_zeta,
         Bw6Fr memory r,
         Bitmask memory bitmask,

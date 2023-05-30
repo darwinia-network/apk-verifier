@@ -17,7 +17,7 @@ contract PackedVerifier {
     using BW6FR for Bw6Fr[];
     using Lagrange for Bw6Fr;
     using BitMask for Bitmask;
-    using Single for Bw6G1Affine[];
+    using Single for Bw6G1[];
     using KZG for KzgOpening[];
     using KZG for AccumulatedOpening;
     using KeySet for KeysetCommitment;
@@ -36,7 +36,7 @@ contract PackedVerifier {
         Bw6Fr[] nus;
     }
 
-    constructor(Bw6G1Affine[2] memory c0) {
+    constructor(Bw6G1[2] memory c0) {
         pks_comm.pks_comm[0] = c0[0];
         pks_comm.pks_comm[1] = c0[1];
         pks_comm.log_domain_size = LOG_N;
@@ -59,7 +59,7 @@ contract PackedVerifier {
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
         PackedProof calldata proof,
-        Bls12G2Affine calldata aggregate_signature,
+        Bls12G2 calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
     ) external view {
         uint n_signers = public_input.bitmask.count_ones();
@@ -72,12 +72,12 @@ contract PackedVerifier {
     }
 
     function verify_bls(
-        Bls12G1Affine memory aggregate_public_key,
-        Bls12G2Affine memory aggregate_signature,
+        Bls12G1 memory aggregate_public_key,
+        Bls12G2 memory aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
     ) internal view returns (bool) {
         require(pks_comm.log_domain_size == new_validator_set_commitment.log_domain_size, "!log_n");
-        Bls12G2Affine memory message = new_validator_set_commitment.hash_commitment();
+        Bls12G2 memory message = new_validator_set_commitment.hash_commitment();
         return BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message);
     }
 
@@ -137,11 +137,11 @@ contract PackedVerifier {
     ) internal view {
         // Reconstruct the commitment to the linearization polynomial using the commitments to the registers from the proof.
         // linearization polynomial commitment
-        Bw6G1Affine memory r_comm = proof.register_evaluations.restore_commitment_to_linearization_polynomial(challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments, proof.additional_commitments);
+        Bw6G1 memory r_comm = proof.register_evaluations.restore_commitment_to_linearization_polynomial(challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments, proof.additional_commitments);
 
         // Aggregate the commitments to be opened in \zeta, using the challenge \nu.
         // aggregate evaluation claims in zeta
-        Bw6G1Affine[] memory commitments = new Bw6G1Affine[](8);
+        Bw6G1[] memory commitments = new Bw6G1[](8);
         commitments[0] = pks_comm.pks_comm[0];
         commitments[1] = pks_comm.pks_comm[1];
         commitments[2] = proof.register_commitments.bitmask;
@@ -160,7 +160,7 @@ contract PackedVerifier {
         register_evals[5] = proof.register_evaluations.c;
         register_evals[6] = proof.register_evaluations.acc;
         register_evals[7] = proof.q_zeta;
-        (Bw6G1Affine memory w_comm, Bw6Fr memory w_at_zeta) = commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
+        (Bw6G1 memory w_comm, Bw6Fr memory w_at_zeta) = commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
 
         // batched KZG openning
         KzgOpening memory opening_at_zeta = KzgOpening({

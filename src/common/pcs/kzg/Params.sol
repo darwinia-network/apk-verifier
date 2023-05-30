@@ -4,9 +4,9 @@ import "../../bw6761/G1.sol";
 import "../../bw6761/G2.sol";
 
 struct RVK {
-    Bw6G1Affine g1;
-    Bw6G2Affine g2;
-    Bw6G2Affine tau_in_g2;
+    Bw6G1 g1;
+    Bw6G2 g2;
+    Bw6G2 tau_in_g2;
 }
 
 library KZGParams {
@@ -17,7 +17,7 @@ library KZGParams {
 // }
     function raw_vk() internal pure returns (RVK memory) {
         return RVK({
-            g1: Bw6G1Affine({
+            g1: Bw6G1({
                 x: Bw6Fp({
                     a: 0xced40f3fc08a0df72f075f1372a205ecaf8753d9880232ef8d819f925e815e,
                     b: 0x78c17205e5ad6e4b169d8b4961e0cb61a7e79d37665ffdd49e44a67a582fe12e,
@@ -29,7 +29,7 @@ library KZGParams {
                     c: 0x8e4dd093d1b938da474d5da47796b4c8831a4ae0d4366519574ac860dbbc4403
                 })
             }),
-            g2: Bw6G2Affine({
+            g2: Bw6G2({
                 x: Bw6Fp({
                     a: 0xe1587b628b0c186657f8f9a1607324aa063e21297bb041429583d9760988a4,
                     b: 0xd79621843cc6065599e88c2e21efbf1aabae59d8cb85b5b656d04085114e230e,
@@ -41,7 +41,7 @@ library KZGParams {
                     c: 0xe83d56e8a4ce45043f05d1d565f7ae081fa8369ded934af4fbc1a173104e7c71
                 })
             }),
-            tau_in_g2: Bw6G2Affine({
+            tau_in_g2: Bw6G2({
                 x: Bw6Fp({
                     a: 0x87bd13edeea1bc699a8fdd23f55f292d85221fb0b47602ba337e03b3d8ac1c,
                     b: 0xc0267f2bea8e36d07ad6c5fedac48820fdac9a1722bf9e5cfa1bd8247ad1ee68,

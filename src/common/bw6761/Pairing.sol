@@ -7,14 +7,14 @@ library BW6Pairing {
     // BW6_PAIRING
     uint8 private constant BW6_PAIRING = 0x19;
 
-    function pairing(Bw6G1Affine[] memory a, Bw6G2Affine[] memory b) internal view returns (bool) {
+    function pairing(Bw6G1[] memory a, Bw6G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
         uint k = a.length;
         uint N = 12 * k;
         uint[] memory input = new uint[](N);
         for (uint i = 0; i < k; i++) {
-            Bw6G1Affine memory g1 = a[i];
-            Bw6G2Affine memory g2 = b[i];
+            Bw6G1 memory g1 = a[i];
+            Bw6G2 memory g2 = b[i];
             input[i*k] = g1.x.a;
             input[i*k+1] = g1.x.b;
             input[i*k+2] = g1.x.c;

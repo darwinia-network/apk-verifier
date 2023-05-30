@@ -7,24 +7,24 @@ library BLS12Pairing {
     // BLS12_377_PAIRING
     uint8 private constant BLS12_PAIRING = 0x19;
 
-    function verify(Bls12G1Affine memory public_key, Bls12G2Affine memory signature, Bls12G2Affine memory message) internal view returns (bool) {
-        Bls12G1Affine[] memory a = new Bls12G1Affine[](2);
+    function verify(Bls12G1 memory public_key, Bls12G2 memory signature, Bls12G2 memory message) internal view returns (bool) {
+        Bls12G1[] memory a = new Bls12G1[](2);
         a[0] = BLS12G1.neg_generator();
         a[1] = public_key;
-        Bls12G2Affine[] memory b = new Bls12G2Affine[](2);
+        Bls12G2[] memory b = new Bls12G2[](2);
         b[0] = signature;
         b[1] = message;
         return pairing(a, b);
     }
 
-    function pairing(Bls12G1Affine[] memory a, Bls12G2Affine[] memory b) internal view returns (bool) {
+    function pairing(Bls12G1[] memory a, Bls12G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
         uint k = a.length;
         uint N = 12 * k;
         uint[] memory input = new uint[](N);
         for (uint i = 0; i < k; i++) {
-            Bls12G1Affine memory g1 = a[i];
-            Bls12G2Affine memory g2 = b[i];
+            Bls12G1 memory g1 = a[i];
+            Bls12G2 memory g2 = b[i];
             input[i*k]    = g1.x.a;
             input[i*k+1]  = g1.x.b;
             input[i*k+2]  = g1.y.a;

@@ -4,13 +4,13 @@ import "./bw6761/G1.sol";
 import "./bls12377/G2.sol";
 
 struct KeysetCommitment {
-    Bw6G1Affine[2] pks_comm;
+    Bw6G1[2] pks_comm;
     uint32 log_domain_size;
 }
 
 library KeySet {
     using BLS12G2 for bytes;
-    using BW6G1Affine for Bw6G1Affine;
+    using BW6G1Affine for Bw6G1;
 
     function serialize(KeysetCommitment memory self) internal pure returns (bytes memory) {
         bytes memory x = self.pks_comm[0].serialize();
@@ -19,7 +19,7 @@ library KeySet {
         return abi.encodePacked(x, y, s);
     }
 
-    function hash_commitment(KeysetCommitment  memory self) internal view returns (Bls12G2Affine memory) {
+    function hash_commitment(KeysetCommitment  memory self) internal view returns (Bls12G2 memory) {
         bytes memory buf = serialize(self);
         return buf.hash_to_curve();
     }

@@ -6,12 +6,12 @@ import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
 struct PartialSumsCommitments {
-    Bw6G1Affine[2] partial_sums;
+    Bw6G1[2] partial_sums;
 }
 
 struct PartialSumsAndBitmaskCommitments {
-    Bw6G1Affine[2] partial_sums;
-    Bw6G1Affine bitmask;
+    Bw6G1[2] partial_sums;
+    Bw6G1 bitmask;
 }
 
 struct AffineAdditionEvaluations {
@@ -23,16 +23,16 @@ struct AffineAdditionEvaluations {
 library BasicProtocol {
     using BW6FR for Bw6Fr;
     using BLS12FP for Bls12Fp;
-    using BW6G1Affine for Bw6G1Affine;
-    using BLS12G1 for Bls12G1Affine;
+    using BW6G1Affine for Bw6G1;
+    using BLS12G1 for Bls12G1;
 
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
         Bw6Fr memory phi,
         Bw6Fr memory zeta_minus_omega_inv,
-        Bw6G1Affine[2] memory commitments
+        Bw6G1[2] memory commitments
     ) internal view returns (
-        Bw6G1Affine memory
+        Bw6G1 memory
     ) {
         Bw6Fr memory b = self.bitmask;
         Bw6Fr memory x1 = self.partial_sums[0];
@@ -40,7 +40,7 @@ library BasicProtocol {
         Bw6Fr memory x2 = self.keyset[0];
         Bw6Fr memory y2 = self.keyset[1];
 
-        Bw6G1Affine memory r_comm = BW6G1Affine.zero();
+        Bw6G1 memory r_comm = BW6G1Affine.zero();
         // X3 := acc_x polynomial
         // Y3 := acc_y polynomial
         // a1_lin = b(x1-x2)^2.X3 + (1-b)Y3
@@ -77,7 +77,7 @@ library BasicProtocol {
 
     function evaluate_constraint_polynomials(
         AffineAdditionEvaluations memory self,
-        Bls12G1Affine memory apk,
+        Bls12G1 memory apk,
         LagrangeEvaluations memory evals_at_zeta
     ) internal view returns (
         Bw6Fr memory,
@@ -145,7 +145,7 @@ library BasicProtocol {
     }
 
     function evaluate_public_inputs_constraints(
-        Bls12G1Affine memory apk,
+        Bls12G1 memory apk,
         LagrangeEvaluations memory evals_at_zeta,
         Bw6Fr memory x1,
         Bw6Fr memory y1
@@ -153,8 +153,8 @@ library BasicProtocol {
         Bw6Fr memory,
         Bw6Fr memory
     ) {
-        Bls12G1Affine memory h = BLS12G1.point_in_g1_complement();
-        Bls12G1Affine memory apk_plus_h = h.add(apk);
+        Bls12G1 memory h = BLS12G1.point_in_g1_complement();
+        Bls12G1 memory apk_plus_h = h.add(apk);
         Bw6Fr memory hx = h.x.into();
         Bw6Fr memory hy = h.y.into();
         Bw6Fr memory px = apk_plus_h.x.into();

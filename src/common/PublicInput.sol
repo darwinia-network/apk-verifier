@@ -4,6 +4,6 @@ import "./bls12377/G1.sol";
 import "./Bitmask.sol";
 
 struct AccountablePublicInput {
-    Bls12G1Affine apk;
+    Bls12G1 apk;
     Bitmask bitmask;
 }

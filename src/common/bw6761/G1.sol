@@ -3,7 +3,7 @@ pragma solidity ^0.8.17;
 import "./Fp.sol";
 import "./Fr.sol";
 
-struct Bw6G1Affine {
+struct Bw6G1 {
     Bw6Fp x;
     Bw6Fp y;
 }
@@ -21,28 +21,28 @@ library BW6G1Affine {
     bytes1 private constant INFINITY_FLAG = bytes1(0x40);
     bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);
 
-    function zero() internal pure returns (Bw6G1Affine memory) {
-        return Bw6G1Affine(
+    function zero() internal pure returns (Bw6G1 memory) {
+        return Bw6G1(
             BW6FP.zero(),
             BW6FP.zero()
         );
     }
 
-    function is_zero(Bw6G1Affine memory p) internal pure returns (bool) {
+    function is_zero(Bw6G1 memory p) internal pure returns (bool) {
         return p.x.is_zero() && p.y.is_zero();
     }
 
-    function is_infinity(Bw6G1Affine memory p) internal pure returns (bool) {
+    function is_infinity(Bw6G1 memory p) internal pure returns (bool) {
         return is_zero(p);
     }
 
     /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
     /// Else, returns `(x, -y)`, where `self = (x, y)`.
-    function neg(Bw6G1Affine memory self) internal pure {
+    function neg(Bw6G1 memory self) internal pure {
         self.y.neg();
     }
 
-    function add(Bw6G1Affine memory p, Bw6G1Affine memory q) internal view returns (Bw6G1Affine memory) {
+    function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory) {
         uint[12] memory input;
         input[0]  = p.x.a;
         input[1]  = p.x.b;
@@ -69,12 +69,12 @@ library BW6G1Affine {
         return from(output);
     }
 
-    function sub(Bw6G1Affine memory p, Bw6G1Affine memory q) internal view returns (Bw6G1Affine memory z) {
+    function sub(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory z) {
         neg(q);
         z = add(p, q);
     }
 
-    function mul(Bw6G1Affine memory p, Bw6Fr memory scalar) internal view returns (Bw6G1Affine memory) {
+    function mul(Bw6G1 memory p, Bw6Fr memory scalar) internal view returns (Bw6G1 memory) {
         uint[8] memory input;
         input[0] = p.x.a;
         input[1] = p.x.b;
@@ -97,13 +97,13 @@ library BW6G1Affine {
         return from(output);
     }
 
-    function msm(Bw6G1Affine[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1Affine memory) {
+    function msm(Bw6G1[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1 memory) {
         require(bases.length == scalars.length, "!len");
         uint k = bases.length;
         uint N = 8 * k;
         uint[] memory input = new uint[](N);
         for (uint i = 0; i < k; i++) {
-            Bw6G1Affine memory base = bases[i];
+            Bw6G1 memory base = bases[i];
             Bw6Fr memory scalar = scalars[i];
             input[i*k] = base.x.a;
             input[i*k+1] = base.x.b;
@@ -127,14 +127,14 @@ library BW6G1Affine {
         return from(output);
     }
 
-    function from(uint[6] memory x) internal pure returns (Bw6G1Affine memory) {
-        return Bw6G1Affine(
+    function from(uint[6] memory x) internal pure returns (Bw6G1 memory) {
+        return Bw6G1(
             Bw6Fp(x[0], x[1], x[2]),
             Bw6Fp(x[3], x[4], x[5])
         );
     }
 
-    function serialize(Bw6G1Affine memory g1) internal pure returns (bytes memory r) {
+    function serialize(Bw6G1 memory g1) internal pure returns (bytes memory r) {
         if (is_infinity(g1)) {
             r = new bytes(96);
             r[95] = INFINITY_FLAG;
