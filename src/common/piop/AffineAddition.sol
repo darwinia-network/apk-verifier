@@ -80,11 +80,7 @@ library BasicProtocol {
         Bls12G1 memory apk,
         LagrangeEvaluations memory evals_at_zeta
     ) internal view returns (
-        Bw6Fr memory,
-        Bw6Fr memory,
-        Bw6Fr memory,
-        Bw6Fr memory,
-        Bw6Fr memory
+        Bw6Fr[] memory
     ) {
         Bw6Fr memory b = self.bitmask;
         Bw6Fr memory x1 = self.partial_sums[0];
@@ -107,7 +103,13 @@ library BasicProtocol {
             x1,
             y1
         );
-        return (a1, a2, a3, a4, a5);
+        Bw6Fr[] memory res = new Bw6Fr[](5);
+        res[0] = a1;
+        res[1] = a2;
+        res[2] = a3;
+        res[3] = a4;
+        res[4] = a5;
+        return res;
     }
 
     function evaluate_conditional_affine_addition_constraints_linearized(

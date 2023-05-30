@@ -2,6 +2,7 @@ pragma solidity ^0.8.17;
 
 import "../domain/Radix2.sol";
 import "../../bw6761/Fr.sol";
+import "../../Bitmask.sol";
 
 /// Values of the polynomials at a point z
 struct LagrangeEvaluations {
@@ -14,6 +15,8 @@ struct LagrangeEvaluations {
 
 library Lagrange {
     using BW6FR for Bw6Fr;
+    using BW6FR for Bw6Fr[];
+    using BitMask for Bitmask;
 
     function lagrange_evaluations(
         Bw6Fr memory z,
@@ -41,5 +44,37 @@ library Lagrange {
             zeta_minus_omega_inv: z.sub(dm.group_gen_inv),
             zeta_omega: z.mul(dm.group_gen)
         });
+    }
+
+    function barycentric_eval_binary_at(
+        Bw6Fr memory z,
+        Bitmask memory evals,
+        Radix2EvaluationDomain memory dm
+    ) internal view returns (
+        Bw6Fr memory
+    ) {
+        Bw6Fr memory z_n = z;
+        for (uint i = 0; i < dm.log_size_of_group; i++) {
+            z_n.square();
+        }
+        Bw6Fr memory z_n_minus_one = z_n.sub(BW6FR.one());
+        Bw6Fr memory z_n_minus_one_div_n = z_n_minus_one.mul(dm.size_inv);
+
+        uint256 N = evals.count_ones();
+        Bw6Fr[] memory li_inv = new Bw6Fr[](N);
+        Bw6Fr memory acc = z;
+
+        Bw6Fr memory one = BW6FR.one();
+        for (uint i = N; i > 0; i--) {
+            bool b = evals.at(i-1);
+            if (b) {
+                li_inv[N-i] = acc.sub(one);
+                li_inv[N-i].inverse();
+            }
+            acc = acc.mul(dm.group_gen_inv);
+        }
+
+        Bw6Fr memory s = li_inv.sum();
+        return z_n_minus_one_div_n.mul(s);
     }
 }

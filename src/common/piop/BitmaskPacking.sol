@@ -105,20 +105,14 @@ library PackedProtocol {
             c
         );
 
-        (
-            Bw6Fr memory a1,
-            Bw6Fr memory a2,
-            Bw6Fr memory a3,
-            Bw6Fr memory a4,
-            Bw6Fr memory a5
-        ) = self.basic_evaluations.evaluate_constraint_polynomials(apk, evals_at_zeta);
+        Bw6Fr[] memory basic = self.basic_evaluations.evaluate_constraint_polynomials(apk, evals_at_zeta);
 
         Bw6Fr[] memory res = new Bw6Fr[](7);
-        res[0] = a1;
-        res[1] = a2;
-        res[2] = a3;
-        res[3] = a4;
-        res[4] = a5;
+        res[0] = basic[0];
+        res[1] = basic[1];
+        res[2] = basic[2];
+        res[3] = basic[3];
+        res[4] = basic[4];
         res[5] = a6;
         res[6] = a7;
         return res;

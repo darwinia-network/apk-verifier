@@ -1,5 +1,7 @@
 pragma solidity ^0.8.17;
 
+import "./Bits.sol";
+
 struct Bitmask {
     uint256[] limbs;
     uint8 padding_size;
@@ -7,6 +9,8 @@ struct Bitmask {
 
 // Inspired: https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/Bitfield.sol
 library BitMask {
+    using Bits for uint256;
+
     /// @dev Constants used to efficiently calculate the hamming weight of a bitfield. See
     /// https://en.wikipedia.org/wiki/Hamming_weight#Efficient_implementation for an explanation of those constants.
     uint256 internal constant M1 = 0x5555555555555555555555555555555555555555555555555555555555555555;
@@ -34,6 +38,7 @@ library BitMask {
         }
     }
 
+    // TODO: padding
     function count_ones(uint256 x) internal pure returns (uint256) {
         unchecked {
             x = (x & M1) + ((x >> 1) & M1); //put count of each  2 bits into those  2 bits
@@ -50,5 +55,11 @@ library BitMask {
 
     function size(Bitmask memory self) internal pure returns (uint256) {
         return BITS_IN_LIMB * self.limbs.length - self.padding_size;
+    }
+
+    function at(Bitmask memory self, uint256 index) internal pure returns (bool) {
+        uint part = index >> 8;
+        uint8 b = uint8(index & 0xFF);
+        return self.limbs[part].bit(b) == 1;
     }
 }

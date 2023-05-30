@@ -5,7 +5,8 @@ import "./piop/AffineAddition.sol";
 import "./piop/Basic.sol";
 
 struct SimpleProof {
-    PartialSumsCommitments register_commitments;
+    // PartialSumsCommitments
+    Bw6G1[2] register_commitments;
     // Prover receives \phi, the constraint polynomials batching challenge, here
     Bw6G1 q_comm;
     // Prover receives \zeta, the evaluation point challenge, here

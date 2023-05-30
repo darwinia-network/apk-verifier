@@ -2,7 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "./common/KeySet.sol";
-import "./common/PackedProof.sol";
+import "./common/SimpleProof.sol";
 import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
 import "./common/bls12377/Pairing.sol";
@@ -21,13 +21,13 @@ contract BasicVerifier {
     using KZG for KzgOpening[];
     using KZG for AccumulatedOpening;
     using KeySet for KeysetCommitment;
-    using PackedProtocol for SuccinctAccountableRegisterEvaluations;
+    using BasicProtocol for AffineAdditionEvaluations;
 
     KeysetCommitment public pks_comm;
 
     uint32 internal constant LOG_N = 8;
     uint256 internal constant QUORUM = 171;
-    uint256 internal constant POLYS_OPENED_AT_ZETA = 8;
+    uint256 internal constant POLYS_OPENED_AT_ZETA = 5;
 
     struct Challenges {
         Bw6Fr r;
@@ -58,13 +58,13 @@ contract BasicVerifier {
 
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
-        PackedProof calldata proof,
+        SimpleProof calldata proof,
         Bls12G2 calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
     ) external view {
         uint n_signers = public_input.bitmask.count_ones();
         // apk proof verification
-        require(verify_packed(public_input, proof), "!apk");
+        require(verify_simple(public_input, proof), "!apk");
         // aggregate BLS signature verification
         require(verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment), "!bls");
         // check threhold
@@ -81,85 +81,81 @@ contract BasicVerifier {
         return BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message);
     }
 
-    function verify_packed(
+    function verify_simple(
         AccountablePublicInput calldata public_input,
-        PackedProof calldata proof
+        SimpleProof calldata proof
     ) internal view returns (bool) {
         Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
-        validate_evaluations(proof, challenges, evals_at_zeta);
-        Bw6Fr[] memory constraint_polynomial_evals = proof.register_evaluations.evaluate_constraint_polynomials(
-            public_input.apk,
-            evals_at_zeta,
-            challenges.r,
-            public_input.bitmask,
-            domain().size
-        );
+        Bw6Fr memory b_at_zeta = challenges.zeta.barycentric_eval_binary_at(public_input.bitmask, domain());
+
+        AffineAdditionEvaluations memory evaluations_with_bitmask = AffineAdditionEvaluations({
+            keyset: proof.register_evaluations.keyset,
+            bitmask: b_at_zeta,
+            partial_sums: proof.register_evaluations.partial_sums
+        });
+
+        validate_evaluations(proof, evaluations_with_bitmask, challenges, evals_at_zeta);
+        Bw6Fr[] memory constraint_polynomial_evals = evaluations_with_bitmask.evaluate_constraint_polynomials(public_input.apk, evals_at_zeta);
         Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
         return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
     function restore_challenges(
         AccountablePublicInput calldata public_input,
-        PackedProof calldata proof,
+        SimpleProof calldata proof,
         uint batch_size
     ) internal pure returns (Challenges memory challenges) {
         // round 1
-        // r: 148463445298089904513087484940164626325
-        // phi: 243748979811998529482591231053547914852
-        // zeta: 58577177620710384020790074836476479695
-        // nus: 294226658051913336540121282516254233209
-        // nus: 229410270415995212517116040564899870968
-        // nus: 270750939643154050657857728703505368456
-        // nus: 128439446578377229427899470686821262556
-        // nus: 87988987011424240712390231091508683762
-        // nus: 199905441038655779674490672174270276191
-        // nus: 270839794691390195040902573679323356436
-        // nus: 10867984333282547221687828916972081361
+        // r: 316184119047170985678859850286058587173
+        // phi: 229431583332175287952736889360130265601
+        // zeta: 205713981876823471916128338707288082226
+        // nus: 295675319708202552530236744222952976411
+        // nus: 81967839698258153224494350487614325862
+        // nus: 273685501643805143626396666501645473096
+        // nus: 279780497664716091553307857641992028376
+        // nus: 249996081711359616874775486460835326939
         // round 2
-        // r: 253453553334492236314136518247811366407
-        // phi: 5764060185484733714944649537193910790
-        // zeta: 264032886822723680866809969862799286716
-        // nus: 248706878528030314442584180890783668863
-        // nus: 280770477547727441267737976516388075851
-        // nus: 66398653458974599588365071027440219540
-        // nus: 86591554995251836073465301941886672047
-        // nus: 324722053290355541151556099019120340334
-        // nus: 224847281907241683364320560038619621321
-        // nus: 64748762694498982892334791840564383988
-        // nus: 325921140606714040130243320654852173932
+        // r: 214461819470133474043830971699624620965
+        // phi: 267144196676487131932249913367425314525
+        // zeta: 151916890222816731072720545769889639680
+        // nus: 6036633571394435993141903494482850440
+        // nus: 110682342114564105332374039544905444995
+        // nus: 38908841322699318106298049165875802890
+        // nus: 16699084510413906109182376671569389792
+        // nus: 68423045582429934699270102589289956768
     }
 
     function validate_evaluations(
-        PackedProof calldata proof,
+        SimpleProof memory proof,
+        AffineAdditionEvaluations memory protocol,
         Challenges memory challenges,
         LagrangeEvaluations memory evals_at_zeta
     ) internal view {
+        // KZG check
         // Reconstruct the commitment to the linearization polynomial using the commitments to the registers from the proof.
         // linearization polynomial commitment
-        Bw6G1 memory r_comm = proof.register_evaluations.restore_commitment_to_linearization_polynomial(challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments, proof.additional_commitments);
+        Bw6G1 memory r_comm = protocol.restore_commitment_to_linearization_polynomial(
+            challenges.phi,
+            evals_at_zeta.zeta_minus_omega_inv,
+            proof.register_commitments
+        );
 
         // Aggregate the commitments to be opened in \zeta, using the challenge \nu.
         // aggregate evaluation claims in zeta
         Bw6G1[] memory commitments = new Bw6G1[](8);
         commitments[0] = pks_comm.pks_comm[0];
         commitments[1] = pks_comm.pks_comm[1];
-        commitments[2] = proof.register_commitments.bitmask;
-        commitments[3] = proof.register_commitments.partial_sums[0];
-        commitments[4] = proof.register_commitments.partial_sums[1];
-        commitments[5] = proof.additional_commitments.c_comm;
-        commitments[6] = proof.additional_commitments.acc_comm;
-        commitments[7] = proof.q_comm;
+        commitments[2] = proof.register_commitments[0];
+        commitments[3] = proof.register_commitments[1];
+        commitments[4] = proof.q_comm;
         // ...together with the corresponding values
         Bw6Fr[] memory register_evals = new Bw6Fr[](8);
-        register_evals[0] = proof.register_evaluations.basic_evaluations.keyset[0];
-        register_evals[1] = proof.register_evaluations.basic_evaluations.keyset[1];
-        register_evals[2] = proof.register_evaluations.basic_evaluations.bitmask;
-        register_evals[3] = proof.register_evaluations.basic_evaluations.partial_sums[0];
-        register_evals[4] = proof.register_evaluations.basic_evaluations.partial_sums[1];
-        register_evals[5] = proof.register_evaluations.c;
-        register_evals[6] = proof.register_evaluations.acc;
-        register_evals[7] = proof.q_zeta;
+        register_evals[0] = proof.register_evaluations.keyset[0];
+        register_evals[1] = proof.register_evaluations.keyset[1];
+        register_evals[2] = proof.register_evaluations.partial_sums[0];
+        register_evals[3] = proof.register_evaluations.partial_sums[1];
+        register_evals[4] = proof.q_zeta;
         (Bw6G1 memory w_comm, Bw6Fr memory w_at_zeta) = commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
 
         // batched KZG openning
@@ -187,11 +183,11 @@ contract BasicVerifier {
     }
 
     function rand1() internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0, 249329011989041299445135604789887024250);
+        return Bw6Fr(0, 90446104354498767706852358120428536180);
     }
 
     function rand2() internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0, 249329011989041299445135604789887024250);
+        return Bw6Fr(0, 73159356298389445321185536595177378997);
     }
 
     function kzg_pvk() public pure returns (RVK memory) {
