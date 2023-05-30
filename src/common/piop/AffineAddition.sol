@@ -5,6 +5,10 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
+struct PartialSumsCommitments {
+    Bw6G1Affine[2] partial_sums;
+}
+
 struct PartialSumsAndBitmaskCommitments {
     Bw6G1Affine[2] partial_sums;
     Bw6G1Affine bitmask;

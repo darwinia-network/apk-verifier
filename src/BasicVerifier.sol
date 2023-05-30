@@ -12,7 +12,7 @@ import "./common/pcs/aggregation/Single.sol";
 import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 
-contract Verifier {
+contract BasicVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
     using Lagrange for Bw6Fr;
@@ -42,15 +42,6 @@ contract Verifier {
         pks_comm.log_domain_size = LOG_N;
     }
 
-    // size: 256
-    // log_size_of_group: 8
-    // size_as_field_element: 256
-    // size_inv: 257654018098855933487173621453897855671016975595715775147150339765678591518855116436004165920278151686454226452481
-    // group_gen: 154024850971602403716343999335441368721120525754417003009036162778518935047698676752264790802570774154019420192516
-    // group_gen_inv: 36228310605284181749511895050030902175643863782072248343426179647675890968621805560723075433239103594150130258885
-    // offset: 1
-    // offset_inv: 1
-    // offset_pow_size: 1
     function domain() internal pure returns (Radix2EvaluationDomain memory) {
         return Radix2EvaluationDomain({
            size: 256,
