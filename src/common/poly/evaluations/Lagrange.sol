@@ -7,10 +7,10 @@ import "../../Bitmask.sol";
 /// Values of the polynomials at a point z
 struct LagrangeEvaluations {
     Bw6Fr vanishing_polynomial; // z^n - 1
-    Bw6Fr l_first;              // L_0(z)
-    Bw6Fr l_last;               // L_{n-1}(z)
+    Bw6Fr l_first; // L_0(z)
+    Bw6Fr l_last; // L_{n-1}(z)
     Bw6Fr zeta_minus_omega_inv; // z - \omega^{-1}
-    Bw6Fr zeta_omega;           // z * \omega
+    Bw6Fr zeta_omega; // z * \omega
 }
 
 library Lagrange {
@@ -18,14 +18,13 @@ library Lagrange {
     using BW6FR for Bw6Fr[];
     using BitMask for Bitmask;
 
-    function lagrange_evaluations(
-        Bw6Fr memory z,
-        Radix2EvaluationDomain memory dm
-    ) internal view returns (
-        LagrangeEvaluations memory
-    ) {
+    function lagrange_evaluations(Bw6Fr memory z, Radix2EvaluationDomain memory dm)
+        internal
+        view
+        returns (LagrangeEvaluations memory)
+    {
         Bw6Fr memory z_n = z;
-        for (uint i = 0; i < dm.log_size_of_group; i++) {
+        for (uint256 i = 0; i < dm.log_size_of_group; i++) {
             z_n.square();
         }
 
@@ -46,15 +45,13 @@ library Lagrange {
         });
     }
 
-    function barycentric_eval_binary_at(
-        Bw6Fr memory z,
-        Bitmask memory evals,
-        Radix2EvaluationDomain memory dm
-    ) internal view returns (
-        Bw6Fr memory
-    ) {
+    function barycentric_eval_binary_at(Bw6Fr memory z, Bitmask memory evals, Radix2EvaluationDomain memory dm)
+        internal
+        view
+        returns (Bw6Fr memory)
+    {
         Bw6Fr memory z_n = z;
-        for (uint i = 0; i < dm.log_size_of_group; i++) {
+        for (uint256 i = 0; i < dm.log_size_of_group; i++) {
             z_n.square();
         }
         Bw6Fr memory z_n_minus_one = z_n.sub(BW6FR.one());
@@ -65,11 +62,11 @@ library Lagrange {
         Bw6Fr memory acc = z;
 
         Bw6Fr memory one = BW6FR.one();
-        for (uint i = N; i > 0; i--) {
-            bool b = evals.at(i-1);
+        for (uint256 i = N; i > 0; i--) {
+            bool b = evals.at(i - 1);
             if (b) {
-                li_inv[N-i] = acc.sub(one);
-                li_inv[N-i].inverse();
+                li_inv[N - i] = acc.sub(one);
+                li_inv[N - i].inverse();
             }
             acc = acc.mul(dm.group_gen_inv);
         }

@@ -23,19 +23,17 @@ library KZG {
     using BW6G1Affine for Bw6G1;
     using BW6G1Affine for Bw6G1[];
 
-    function accumulate(
-        KzgOpening[] memory openings,
-        Bw6Fr[] memory rs,
-        RVK memory vk
-    ) internal view returns (
-        AccumulatedOpening memory
-    ) {
+    function accumulate(KzgOpening[] memory openings, Bw6Fr[] memory rs, RVK memory vk)
+        internal
+        view
+        returns (AccumulatedOpening memory)
+    {
         require(openings.length == rs.length, "!len");
-        uint k = openings.length;
+        uint256 k = openings.length;
         Bw6G1[] memory accs = new Bw6G1[](k);
         Bw6G1[] memory proofs = new Bw6G1[](k);
         Bw6Fr[] memory ys = new Bw6Fr[](k);
-        for (uint i = 0; i < k ; i++) {
+        for (uint256 i = 0; i < k; i++) {
             KzgOpening memory opening = openings[i];
             accs[i] = (opening.proof.mul(opening.x)).add(opening.c);
             proofs[i] = opening.proof;
@@ -47,10 +45,7 @@ library KZG {
         return AccumulatedOpening(acc, proof);
     }
 
-    function verify_accumulated(
-        AccumulatedOpening memory opening,
-        RVK memory vk
-    ) internal view returns (bool) {
+    function verify_accumulated(AccumulatedOpening memory opening, RVK memory vk) internal view returns (bool) {
         Bw6G1[] memory a = new Bw6G1[](2);
         a[0] = opening.acc;
         a[1] = opening.proof;

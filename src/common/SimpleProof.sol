@@ -10,7 +10,7 @@ struct SimpleProof {
     // Prover receives \phi, the constraint polynomials batching challenge, here
     Bw6G1 q_comm;
     // Prover receives \zeta, the evaluation point challenge, here
-    AffineAdditionEvaluationsWithoutBitmask register_evaluations ;
+    AffineAdditionEvaluationsWithoutBitmask register_evaluations;
     Bw6Fr q_zeta;
     Bw6Fr r_zeta_omega;
     // Prover receives \nu, the KZG opening batching challenge, here

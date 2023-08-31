@@ -12,7 +12,7 @@ library BW6G1Affine {
     using BW6FP for Bw6Fp;
 
     // BW6_G1_ADD
-    uint private constant G1_ADD = 0x13;
+    uint256 private constant G1_ADD = 0x13;
     // BW6_G1_MUL
     uint8 private constant G1_MUL = 0x14;
     // BW6_G1_MULTIEXP
@@ -22,10 +22,7 @@ library BW6G1Affine {
     bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);
 
     function zero() internal pure returns (Bw6G1 memory) {
-        return Bw6G1(
-            BW6FP.zero(),
-            BW6FP.zero()
-        );
+        return Bw6G1(BW6FP.zero(), BW6FP.zero());
     }
 
     function is_zero(Bw6G1 memory p) internal pure returns (bool) {
@@ -43,20 +40,20 @@ library BW6G1Affine {
     }
 
     function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory) {
-        uint[12] memory input;
-        input[0]  = p.x.a;
-        input[1]  = p.x.b;
-        input[2]  = p.x.c;
-        input[3]  = p.y.a;
-        input[4]  = p.y.b;
-        input[5]  = p.y.c;
-        input[6]  = q.x.a;
-        input[7]  = q.x.b;
-        input[8]  = q.x.c;
-        input[9]  = q.y.a;
+        uint256[12] memory input;
+        input[0] = p.x.a;
+        input[1] = p.x.b;
+        input[2] = p.x.c;
+        input[3] = p.y.a;
+        input[4] = p.y.b;
+        input[5] = p.y.c;
+        input[6] = q.x.a;
+        input[7] = q.x.b;
+        input[8] = q.x.c;
+        input[9] = q.y.a;
         input[10] = q.y.b;
         input[11] = q.y.c;
-        uint[6] memory output;
+        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_ADD, input, 384, output, 192)) {
@@ -75,7 +72,7 @@ library BW6G1Affine {
     }
 
     function mul(Bw6G1 memory p, Bw6Fr memory scalar) internal view returns (Bw6G1 memory) {
-        uint[8] memory input;
+        uint256[8] memory input;
         input[0] = p.x.a;
         input[1] = p.x.b;
         input[2] = p.x.c;
@@ -84,7 +81,7 @@ library BW6G1Affine {
         input[5] = p.y.c;
         input[6] = scalar.a;
         input[7] = scalar.b;
-        uint[6] memory output;
+        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_MUL, input, 256, output, 192)) {
@@ -99,22 +96,22 @@ library BW6G1Affine {
 
     function msm(Bw6G1[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1 memory) {
         require(bases.length == scalars.length, "!len");
-        uint k = bases.length;
-        uint N = 8 * k;
-        uint[] memory input = new uint[](N);
-        for (uint i = 0; i < k; i++) {
+        uint256 k = bases.length;
+        uint256 N = 8 * k;
+        uint256[] memory input = new uint[](N);
+        for (uint256 i = 0; i < k; i++) {
             Bw6G1 memory base = bases[i];
             Bw6Fr memory scalar = scalars[i];
-            input[i*k] = base.x.a;
-            input[i*k+1] = base.x.b;
-            input[i*k+2] = base.x.c;
-            input[i*k+3] = base.y.a;
-            input[i*k+4] = base.y.b;
-            input[i*k+5] = base.y.c;
-            input[i*k+6] = scalar.a;
-            input[i*k+7] = scalar.b;
+            input[i * k] = base.x.a;
+            input[i * k + 1] = base.x.b;
+            input[i * k + 2] = base.x.c;
+            input[i * k + 3] = base.y.a;
+            input[i * k + 4] = base.y.b;
+            input[i * k + 5] = base.y.c;
+            input[i * k + 6] = scalar.a;
+            input[i * k + 7] = scalar.b;
         }
-        uint[6] memory output;
+        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_MULTIEXP, add(input, 32), mul(N, 32), output, 192)) {
@@ -127,11 +124,8 @@ library BW6G1Affine {
         return from(output);
     }
 
-    function from(uint[6] memory x) internal pure returns (Bw6G1 memory) {
-        return Bw6G1(
-            Bw6Fp(x[0], x[1], x[2]),
-            Bw6Fp(x[3], x[4], x[5])
-        );
+    function from(uint256[6] memory x) internal pure returns (Bw6G1 memory) {
+        return Bw6G1(Bw6Fp(x[0], x[1], x[2]), Bw6Fp(x[3], x[4], x[5]));
     }
 
     function serialize(Bw6G1 memory g1) internal pure returns (bytes memory r) {

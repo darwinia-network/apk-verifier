@@ -3,8 +3,8 @@ pragma solidity ^0.8.17;
 import "../math/Math.sol";
 
 struct Bw6Fr {
-    uint a;
-    uint b;
+    uint256 a;
+    uint256 b;
 }
 
 library BW6FR {
@@ -14,7 +14,8 @@ library BW6FR {
 
     //! * Scalar field: r = 0x1ae3a4617c510eac63b05c06ca1493b1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001
     function r() internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0x1ae3a4617c510eac63b05c06ca1493b, 0x1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001);
+        return
+            Bw6Fr(0x1ae3a4617c510eac63b05c06ca1493b, 0x1a22d9f300f5138f1ef3622fba094800170b5d44300000008508c00000000001);
     }
 
     function zero() internal pure returns (Bw6Fr memory) {
@@ -49,7 +50,7 @@ library BW6FR {
         unchecked {
             uint8 carry = 0;
             (carry, z.b) = x.b.adc(y.b, carry);
-            (     , z.a) = x.a.adc(y.a, carry);
+            (, z.a) = x.a.adc(y.a, carry);
         }
     }
 
@@ -72,7 +73,7 @@ library BW6FR {
         unchecked {
             uint8 borrow = 0;
             (borrow, z.b) = m.b.sbb(y.b, borrow);
-            (      , z.a) = m.a.sbb(y.a, borrow);
+            (, z.a) = m.a.sbb(y.a, borrow);
         }
     }
 
@@ -82,7 +83,7 @@ library BW6FR {
             (borrow, z[1].b) = x[1].b.sbb(y[1].b, borrow);
             (borrow, z[1].a) = x[1].a.sbb(y[1].a, borrow);
             (borrow, z[0].b) = x[0].b.sbb(y[0].b, borrow);
-            (      , z[0].a) = x[0].a.sbb(y[0].a, borrow);
+            (, z[0].a) = x[0].a.sbb(y[0].a, borrow);
         }
     }
 
@@ -107,7 +108,7 @@ library BW6FR {
 
     function sum(Bw6Fr[] memory xs) internal pure returns (Bw6Fr memory) {
         Bw6Fr memory s = zero();
-        for (uint i = 0; i < xs.length; i++) {
+        for (uint256 i = 0; i < xs.length; i++) {
             s = add(s, xs[i]);
         }
         return s;
@@ -115,9 +116,9 @@ library BW6FR {
 
     function mul_sum(Bw6Fr[] memory xs, Bw6Fr[] memory ys) internal view returns (Bw6Fr memory z) {
         require(xs.length == ys.length, "!len");
-        uint k = xs.length;
+        uint256 k = xs.length;
         z = zero();
-        for (uint i = 0; i < k; i++) {
+        for (uint256 i = 0; i < k; i++) {
             Bw6Fr memory x = xs[i];
             Bw6Fr memory y = ys[i];
             z = add(z, mul(x, y));
@@ -136,7 +137,7 @@ library BW6FR {
     function inverse(Bw6Fr memory self) internal view returns (Bw6Fr memory) {
         if (is_zero(self)) return self;
         Bw6Fr memory r2 = sub(r(), two());
-        uint[9] memory input;
+        uint256[9] memory input;
         input[0] = 0x40;
         input[1] = 0x40;
         input[2] = 0x40;
@@ -146,7 +147,7 @@ library BW6FR {
         input[6] = r2.b;
         input[7] = r().a;
         input[8] = r().b;
-        uint[2] memory output;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 288, output, 64)) {
@@ -171,7 +172,7 @@ library BW6FR {
     }
 
     function mod_exp(Bw6Fr memory base, uint256 exp, Bw6Fr memory modulus) internal view returns (Bw6Fr memory) {
-        uint[8] memory input;
+        uint256[8] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
         input[2] = 0x40;
@@ -180,7 +181,7 @@ library BW6FR {
         input[5] = exp;
         input[6] = modulus.a;
         input[7] = modulus.b;
-        uint[2] memory output;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
@@ -194,7 +195,7 @@ library BW6FR {
     }
 
     function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory) {
-        uint[7] memory input;
+        uint256[7] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
         input[2] = 0x20;
@@ -202,7 +203,7 @@ library BW6FR {
         input[4] = self.b;
         input[5] = 2;
         input[6] = 1;
-        uint[4] memory output;
+        uint256[4] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 224, output, 128)) {
@@ -215,7 +216,7 @@ library BW6FR {
     }
 
     function norm(Bw6Fr[2] memory self) internal view returns (Bw6Fr memory) {
-        uint[10] memory input;
+        uint256[10] memory input;
         input[0] = 0x80;
         input[1] = 0x20;
         input[2] = 0x40;
@@ -226,7 +227,7 @@ library BW6FR {
         input[7] = 1;
         input[8] = r().a;
         input[9] = r().b;
-        uint[2] memory output;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 320, output, 64)) {
@@ -240,13 +241,13 @@ library BW6FR {
 
     /// (max_exp+1)-sized vec: 1, base, base^2,... ,base^{max_exp}
     function powers(Bw6Fr memory base, uint256 max_exp) internal view returns (Bw6Fr[] memory) {
-        uint cap = max_exp + 1;
+        uint256 cap = max_exp + 1;
         Bw6Fr[] memory result = new Bw6Fr[](cap);
         result[0] = one();
         if (max_exp > 0) {
             result[1] = base;
         }
-        for (uint i = 2; i < cap; i++) {
+        for (uint256 i = 2; i < cap; i++) {
             result[i] = pow(base, i);
         }
         return result;
@@ -254,9 +255,9 @@ library BW6FR {
 
     function horner_field(Bw6Fr[] memory bases, Bw6Fr memory nu) internal view returns (Bw6Fr memory) {
         Bw6Fr memory acc = zero();
-        uint k = bases.length;
-        for (uint i = 0; i < k; i++) {
-            Bw6Fr memory b = bases[k-i-1];
+        uint256 k = bases.length;
+        for (uint256 i = 0; i < k; i++) {
+            Bw6Fr memory b = bases[k - i - 1];
             acc = add(mul(acc, nu), b);
         }
         return acc;

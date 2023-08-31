@@ -7,7 +7,11 @@ library BLS12Pairing {
     // BLS12_377_PAIRING
     uint8 private constant BLS12_PAIRING = 0x19;
 
-    function verify(Bls12G1 memory public_key, Bls12G2 memory signature, Bls12G2 memory message) internal view returns (bool) {
+    function verify(Bls12G1 memory public_key, Bls12G2 memory signature, Bls12G2 memory message)
+        internal
+        view
+        returns (bool)
+    {
         Bls12G1[] memory a = new Bls12G1[](2);
         a[0] = BLS12G1.neg_generator();
         a[1] = public_key;
@@ -19,24 +23,24 @@ library BLS12Pairing {
 
     function pairing(Bls12G1[] memory a, Bls12G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
-        uint k = a.length;
-        uint N = 12 * k;
-        uint[] memory input = new uint[](N);
-        for (uint i = 0; i < k; i++) {
+        uint256 k = a.length;
+        uint256 N = 12 * k;
+        uint256[] memory input = new uint[](N);
+        for (uint256 i = 0; i < k; i++) {
             Bls12G1 memory g1 = a[i];
             Bls12G2 memory g2 = b[i];
-            input[i*k]    = g1.x.a;
-            input[i*k+1]  = g1.x.b;
-            input[i*k+2]  = g1.y.a;
-            input[i*k+3]  = g1.y.b;
-            input[i*k+4]  = g2.x.c0.a;
-            input[i*k+5]  = g2.x.c0.b;
-            input[i*k+6]  = g2.x.c1.a;
-            input[i*k+7]  = g2.x.c1.b;
-            input[i*k+8]  = g2.y.c0.a;
-            input[i*k+9]  = g2.y.c0.b;
-            input[i*k+10] = g2.y.c1.a;
-            input[i*k+11] = g2.y.c1.b;
+            input[i * k] = g1.x.a;
+            input[i * k + 1] = g1.x.b;
+            input[i * k + 2] = g1.y.a;
+            input[i * k + 3] = g1.y.b;
+            input[i * k + 4] = g2.x.c0.a;
+            input[i * k + 5] = g2.x.c0.b;
+            input[i * k + 6] = g2.x.c1.a;
+            input[i * k + 7] = g2.x.c1.b;
+            input[i * k + 8] = g2.y.c0.a;
+            input[i * k + 9] = g2.y.c0.b;
+            input[i * k + 10] = g2.y.c1.a;
+            input[i * k + 11] = g2.y.c1.b;
         }
         bool output;
 

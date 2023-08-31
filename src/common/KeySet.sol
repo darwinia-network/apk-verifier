@@ -19,7 +19,7 @@ library KeySet {
         return abi.encodePacked(x, y, s);
     }
 
-    function hash_commitment(KeysetCommitment  memory self) internal view returns (Bls12G2 memory) {
+    function hash_commitment(KeysetCommitment memory self) internal pure returns (Bls12G2 memory) {
         bytes memory buf = serialize(self);
         return buf.hash_to_curve();
     }

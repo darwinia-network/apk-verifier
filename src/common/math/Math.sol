@@ -12,7 +12,7 @@ library Math {
 
     function sbb(uint256 a, uint256 b, uint8 borrow) internal pure returns (uint8, uint256) {
         unchecked {
-            uint256 c =  a - uint256(borrow);
+            uint256 c = a - uint256(borrow);
             if (b > c) return (1, (c - b));
             return (0, (c - b));
         }

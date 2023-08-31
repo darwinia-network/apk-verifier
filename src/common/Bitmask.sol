@@ -58,7 +58,7 @@ library BitMask {
     }
 
     function at(Bitmask memory self, uint256 index) internal pure returns (bool) {
-        uint part = index >> 8;
+        uint256 part = index >> 8;
         uint8 b = uint8(index & 0xFF);
         return self.limbs[part].bit(b) == 1;
     }
