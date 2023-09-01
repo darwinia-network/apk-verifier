@@ -151,5 +151,59 @@ contract VerifierTest is Test {
                 })
             })
         });
+        Bls12G2 memory aggregate_signature = Bls12G2(
+            Bls12Fp2(
+                Bls12Fp(
+                    0xc18c3e0f0263af8dc35e6132ae6839, 0xb90047eea719b99e967d66cda0bd7b23fdc7ca19bf884842f11768ec18b849d0
+                ),
+                Bls12Fp(
+                    0x1a9c8578fc886572589e72c9bc13c97,
+                    0x01ce96db3be714c581d2d7d9f7d98dbe092a00724e2a79932ebf0064c1f954d6
+                )
+            ),
+            Bls12Fp2(
+                Bls12Fp(
+                    0x2b3e18590cb5d36ca0313116b04d41, 0xda937b0f352ee6062365f34fcb19873520344cf4894a9ce4e60c2fd76d67e8cb
+                ),
+                Bls12Fp(
+                    0x121d46dc2969df70b44e2ffbee91ec1,
+                    0x5ad97b7c00a96e9efc96194d9b61a1282c68bfe0c899d1fc6f1cb0aeda9f5aa1
+                )
+            )
+        );
+        KeysetCommitment memory new_validator_set_commitment = KeysetCommitment({
+            pks_comm: [Bw6G1({
+                x: Bw6Fp({
+                    a: 0xecd9331eb65ccfae29033e52449bad7bacf28a3bd9f583a53b570c02b01870,
+                    b: 0x56af8cfd4bbca5a1eeb7263dad87dad18cf7c096145fc1c4a0430ea2c879fd3f,
+                    c: 0x7a5688185e4eb6399b391ae7e46a2d47d537368fd22c616caac78f093b84a6d2
+                }),
+                y: Bw6Fp({
+                    a: 0x11046acee222b11bc16c17ed7233f52c6f42eec159c08a28c88230e93efc1f9,
+                    b: 0xa0acc5ae0ef7cc1543751faf74c1da8738f40d284f86392fedb5e685a5edb1ae,
+                    c: 0xdca8510e226e2bd4c1de68a2ecf98c7b3a654fd536e43cd3715eca852d733038
+                })
+            }), Bw6G1({
+
+                x: Bw6Fp({
+                    a: 0x10442907759b4e6c3db3df92a3eef95b440898d16d500aa7921396d5612d6c2,
+                    b: 0x49402921afc00a18f4ff3f40c192a793365bb1f1ab2e3f4191f46f0966f1205d,
+                    c: 0x7eada0299d379022cd07bf84b66be90ef407d0bb7e5a0e3c9e3473262f96f99f
+                }),
+                y: Bw6Fp({
+                    a: 0xa84e62454963c78378701fd06b4ba943b80227d196c3056c6cb8a215fd87e1,
+                    b: 0x24f37a537af0126ba3eae459bd45680c72b732e80df41036fe088898bee8efbb,
+                    c: 0x6b11b278346fc6081345c57a4b907751c7d1977c172b7f939bbfc50cedca01f1
+                })
+            })],
+            log_domain_size: 8
+        });
+
+        verifier.verify_aggregates(
+            public_input,
+            proof,
+            aggregate_signature,
+            new_validator_set_commitment
+        );
     }
 }
