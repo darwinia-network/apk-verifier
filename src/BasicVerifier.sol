@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
 import "./common/KeySet.sol";
@@ -110,28 +110,22 @@ contract BasicVerifier {
     }
 
     function restore_challenges(
-        AccountablePublicInput calldata public_input,
-        SimpleProof calldata proof,
-        uint256 batch_size
-    ) internal pure returns (Challenges memory challenges) {
-        // round 1
-        // r: 316184119047170985678859850286058587173
-        // phi: 229431583332175287952736889360130265601
-        // zeta: 205713981876823471916128338707288082226
-        // nus: 295675319708202552530236744222952976411
-        // nus: 81967839698258153224494350487614325862
-        // nus: 273685501643805143626396666501645473096
-        // nus: 279780497664716091553307857641992028376
-        // nus: 249996081711359616874775486460835326939
-        // round 2
-        // r: 214461819470133474043830971699624620965
-        // phi: 267144196676487131932249913367425314525
-        // zeta: 151916890222816731072720545769889639680
-        // nus: 6036633571394435993141903494482850440
-        // nus: 110682342114564105332374039544905444995
-        // nus: 38908841322699318106298049165875802890
-        // nus: 16699084510413906109182376671569389792
-        // nus: 68423045582429934699270102589289956768
+        AccountablePublicInput calldata, /*public_input*/
+        SimpleProof calldata, /*proof*/
+        uint256 /*batch_size*/
+    ) internal pure returns (Challenges memory) {
+        Bw6Fr[] memory nus = new Bw6Fr[](5);
+        nus[0] = Bw6Fr({a: 0, b: 295675319708202552530236744222952976411});
+        nus[1] = Bw6Fr({a: 0, b: 81967839698258153224494350487614325862});
+        nus[2] = Bw6Fr({a: 0, b: 273685501643805143626396666501645473096});
+        nus[3] = Bw6Fr({a: 0, b: 279780497664716091553307857641992028376});
+        nus[4] = Bw6Fr({a: 0, b: 249996081711359616874775486460835326939});
+        return Challenges({
+            r: Bw6Fr({a: 0, b: 316184119047170985678859850286058587173}),
+            phi: Bw6Fr({a: 0, b: 229431583332175287952736889360130265601}),
+            zeta: Bw6Fr({a: 0, b: 205713981876823471916128338707288082226}),
+            nus: nus
+        });
     }
 
     function validate_evaluations(

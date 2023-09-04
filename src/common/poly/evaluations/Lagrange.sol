@@ -25,7 +25,7 @@ library Lagrange {
     {
         Bw6Fr memory z_n = z;
         for (uint256 i = 0; i < dm.log_size_of_group; i++) {
-            z_n.square();
+            z_n = z_n.square();
         }
 
         Bw6Fr memory z_n_minus_one = z_n.sub(BW6FR.one());
@@ -52,7 +52,7 @@ library Lagrange {
     {
         Bw6Fr memory z_n = z;
         for (uint256 i = 0; i < dm.log_size_of_group; i++) {
-            z_n.square();
+            z_n = z_n.square();
         }
         Bw6Fr memory z_n_minus_one = z_n.sub(BW6FR.one());
         Bw6Fr memory z_n_minus_one_div_n = z_n_minus_one.mul(dm.size_inv);

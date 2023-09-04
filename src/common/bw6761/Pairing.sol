@@ -5,7 +5,7 @@ import "./G2.sol";
 
 library BW6Pairing {
     // BW6_PAIRING
-    uint8 private constant BW6_PAIRING = 0x19;
+    uint8 private constant BW6_PAIRING = 0x22;
 
     function pairing(Bw6G1[] memory a, Bw6G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");

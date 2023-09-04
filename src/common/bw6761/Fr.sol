@@ -1,6 +1,7 @@
 pragma solidity ^0.8.17;
 
 import "../math/Math.sol";
+import {console2} from "forge-std/console2.sol";
 
 struct Bw6Fr {
     uint256 a;
@@ -56,12 +57,13 @@ library BW6FR {
 
     function add(Bw6Fr memory x, Bw6Fr memory y) internal pure returns (Bw6Fr memory z) {
         z = add_nomod(x, y);
-        subtract_modulus(z);
+        z = subtract_modulus(z);
     }
 
-    function subtract_modulus(Bw6Fr memory self) internal pure {
+    function subtract_modulus(Bw6Fr memory self) internal pure returns (Bw6Fr memory z) {
+        z = self;
         if (is_geq_modulus(self)) {
-            self = sub(self, r());
+            z = sub(self, r());
         }
     }
 
@@ -93,15 +95,15 @@ library BW6FR {
         Bw6Fr[2] memory fst = square_nomod(lhs);
         // a==b ? (((a + b)**2 / 4
         if (eq(x, y)) {
-            div2(fst);
-            div2(fst);
+            fst = div2(fst);
+            fst = div2(fst);
             z = norm(fst);
         } else {
-            Bw6Fr memory rhs = gt(x, y) ? sub(x, y) : sub(y, x);
+            Bw6Fr memory rhs = sub(x, y);
             Bw6Fr[2] memory snd = square_nomod(rhs);
             Bw6Fr[2] memory rst = sub(fst, snd);
-            div2(rst);
-            div2(rst);
+            rst = div2(rst);
+            rst = div2(rst);
             z = norm(rst);
         }
     }
@@ -125,11 +127,12 @@ library BW6FR {
         }
     }
 
-    function div2(Bw6Fr[2] memory self) internal pure {
-        self[1].b = self[1].b >> 1 + self[1].a << 255;
-        self[1].a = self[1].a >> 1 + self[0].b << 255;
-        self[0].b = self[0].b >> 1 + self[0].a << 255;
-        self[0].a = self[0].a >> 1;
+    function div2(Bw6Fr[2] memory self) internal view returns (Bw6Fr[2] memory z) {
+        z = self;
+        z[1].b = z[1].b >> 1 | z[1].a << 255;
+        z[1].a = z[1].a >> 1 | z[0].b << 255;
+        z[0].b = z[0].b >> 1 | z[0].a << 255;
+        z[0].a = z[0].a >> 1;
     }
 
     // Constant time inversion using Fermat's little theorem.
@@ -163,8 +166,8 @@ library BW6FR {
         return self;
     }
 
-    function square(Bw6Fr memory self) internal view {
-        self = pow(self, 2);
+    function square(Bw6Fr memory self) internal view returns (Bw6Fr memory) {
+        return pow(self, 2);
     }
 
     function pow(Bw6Fr memory base, uint256 exp) internal view returns (Bw6Fr memory) {
@@ -195,18 +198,21 @@ library BW6FR {
     }
 
     function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory) {
-        uint256[7] memory input;
+        uint256[10] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
-        input[2] = 0x20;
+        input[2] = 0x80;
         input[3] = self.a;
         input[4] = self.b;
         input[5] = 2;
-        input[6] = 1;
+        input[6] = type(uint256).max;
+        input[7] = type(uint256).max;
+        input[8] = type(uint256).max;
+        input[9] = type(uint256).max;
         uint256[4] memory output;
 
         assembly ("memory-safe") {
-            if iszero(staticcall(gas(), MOD_EXP, input, 224, output, 128)) {
+            if iszero(staticcall(gas(), MOD_EXP, input, 320, output, 128)) {
                 let p := mload(0x40)
                 returndatacopy(p, 0, returndatasize())
                 revert(p, returndatasize())

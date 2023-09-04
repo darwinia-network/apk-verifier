@@ -9,7 +9,7 @@ struct Bls12G1 {
 
 library BLS12G1 {
     // BLS12_377_G1ADD
-    uint256 private constant G1_ADD = 0x13;
+    uint256 private constant G1_ADD = 0x15;
 
     function generator() internal pure returns (Bls12G1 memory) {
         return Bls12G1({
