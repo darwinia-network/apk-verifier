@@ -22,7 +22,9 @@ contract BW6FRTest is Test {
         Bw6Fr memory e =
             Bw6Fr(0x17e4f28d3c1550c283589a199bdee16, 0x908837a1887389d2177bec05e3cda27bc53e051a9b79817b6051476ed2611b1b);
         Bw6Fr memory c = a.add(b);
+        Bw6Fr memory d = b.add(a);
         assertTrue(e.eq(c));
+        assertTrue(e.eq(d));
     }
 
     function test_sub1() public {
@@ -58,7 +60,7 @@ contract BW6FRTest is Test {
         assertTrue(b.sub(a).square().eq(e));
     }
 
-    function test_mul() public {
+    function test_mul1() public {
         Bw6Fr memory a =
             Bw6Fr(0x199e1755a3a4cdfa17454dba7fa7ac4, 0x0715e575b43a4ed1f47408dc2e2c97d5433a142af15266349437b343298b4b94);
         Bw6Fr memory b =
@@ -66,6 +68,17 @@ contract BW6FRTest is Test {
         Bw6Fr memory e =
             Bw6Fr(0x17782192b3528ac9750390a3acb857e, 0x25f15cd965a1dfe7a748eb6522f2559c6ad9b0fb2bb02058fd03555ce1b151b5);
         Bw6Fr memory c = a.mul(b);
+        Bw6Fr memory d = b.mul(a);
+        assertTrue(e.eq(c));
+        assertTrue(e.eq(d));
+    }
+
+    function test_mul2() public {
+        Bw6Fr memory a =
+            Bw6Fr(0x199e1755a3a4cdfa17454dba7fa7ac4, 0x0715e575b43a4ed1f47408dc2e2c97d5433a142af15266349437b343298b4b94);
+        Bw6Fr memory e =
+            Bw6Fr(0x11eb00d817a0b7f29496baea288664a, 0x9f96769b51738614a28b2487a54f673f46cc53116cb3eea6d9e74015ba2c704d);
+        Bw6Fr memory c = a.mul(a);
         assertTrue(e.eq(c));
     }
 }

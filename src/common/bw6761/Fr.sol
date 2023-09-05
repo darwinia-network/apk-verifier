@@ -124,7 +124,7 @@ library BW6FR {
         }
     }
 
-    function div2(Bw6Fr[2] memory self) internal view returns (Bw6Fr[2] memory z) {
+    function div2(Bw6Fr[2] memory self) internal pure returns (Bw6Fr[2] memory z) {
         z = self;
         z[1].b = z[1].b >> 1 | z[1].a << 255;
         z[1].a = z[1].a >> 1 | z[0].b << 255;
