@@ -66,8 +66,6 @@ contract BW6FRTest is Test {
         Bw6Fr memory e =
             Bw6Fr(0x17782192b3528ac9750390a3acb857e, 0x25f15cd965a1dfe7a748eb6522f2559c6ad9b0fb2bb02058fd03555ce1b151b5);
         Bw6Fr memory c = a.mul(b);
-        console.log(c.a);
-        console.log(c.b);
         assertTrue(e.eq(c));
     }
 }

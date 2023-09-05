@@ -91,15 +91,12 @@ library BW6FR {
 
     /// (a * b) = ((a + b)^2 - (a - b)^2) / 4
     function mul(Bw6Fr memory x, Bw6Fr memory y) internal view returns (Bw6Fr memory z) {
-        Bw6Fr memory lhs = add(x, y);
-        Bw6Fr[2] memory fst = square_nomod(lhs);
-        // a==b ? (((a + b)**2 / 4
         if (eq(x, y)) {
-            fst = div2(fst);
-            fst = div2(fst);
-            z = norm(fst);
+            z = square(x);
         } else {
-            Bw6Fr memory rhs = sub(x, y);
+            Bw6Fr memory lhs = add_nomod(x, y);
+            Bw6Fr[2] memory fst = square_nomod(lhs);
+            Bw6Fr memory rhs = gt(x, y) ? sub(x, y) : sub(y, x);
             Bw6Fr[2] memory snd = square_nomod(rhs);
             Bw6Fr[2] memory rst = sub(fst, snd);
             rst = div2(rst);
