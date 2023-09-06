@@ -62,12 +62,15 @@ contract BasicVerifier {
         });
     }
 
+    uint256 a;
+
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
         SimpleProof calldata proof,
         Bls12G2 calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    ) external view {
+    ) external {
+        a = 1;
         uint256 n_signers = public_input.bitmask.count_ones();
         // apk proof verification
         require(verify_simple(public_input, proof), "!apk");

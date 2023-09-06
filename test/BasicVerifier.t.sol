@@ -158,8 +158,7 @@ contract BasicVerifierTest is Test {
                     0xe3f01ca6ff6209cfc4b5f76939854d, 0x983a2e2e7300a4c19ba84edbce27a4279be484b2a7a1943c30a72ba6f8265e22
                 ),
                 Bls12Fp(
-                    0x79cc7b2a270ac9befcb0b47f6654af,
-                    0xa3f9b97216acd16739ae6762473c7362f10cf8b906832bd22fe51decbed578eb
+                    0x79cc7b2a270ac9befcb0b47f6654af, 0xa3f9b97216acd16739ae6762473c7362f10cf8b906832bd22fe51decbed578eb
                 )
             ),
             Bls12Fp2(
@@ -167,8 +166,7 @@ contract BasicVerifierTest is Test {
                     0x3b9231248eb5337b3e9f028c073efe, 0x7e015f17545cde1d30bbdc0f231d16fad24cd6716b28b3329112a9306d05c1d1
                 ),
                 Bls12Fp(
-                    0x60fafb9c430873a186e529aae8adc7,
-                    0x07326665a45b3b656104c4eecaea70fe7f8ed13c897baadea4ade0955d6e4e39
+                    0x60fafb9c430873a186e529aae8adc7, 0x07326665a45b3b656104c4eecaea70fe7f8ed13c897baadea4ade0955d6e4e39
                 )
             )
         );

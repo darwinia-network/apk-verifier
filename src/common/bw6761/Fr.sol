@@ -1,7 +1,6 @@
 pragma solidity ^0.8.17;
 
 import "../math/Math.sol";
-import {console2} from "forge-std/console2.sol";
 
 struct Bw6Fr {
     uint256 a;

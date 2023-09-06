@@ -5,6 +5,8 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 struct PartialSumsCommitments {
     Bw6G1[2] partial_sums;
 }
@@ -46,6 +48,27 @@ library BasicProtocol {
         // X3 term = b(x1-x2)^2 + b(y1-y2)phi + (1-b)phi
         // Y3 term = (1-b) + b(x1-x2)phi
         // ...and both multiplied by (\zeta - \omega^{n-1}) // = zeta_minus_omega_inv
+
+        Bw6G1 memory ddd = commitments[0].mul(
+            zeta_minus_omega_inv.mul(
+                (b.mul(x1.sub(x2)).mul(x1.sub(x2))).add(b.mul(y1.sub(y2)).mul(phi)).add((BW6FR.one().sub(b)).mul(phi))
+            )
+        );
+
+        console2.log(commitments[0].x.a);
+        console2.log(commitments[0].x.b);
+        console2.log(commitments[0].x.c);
+        console2.log(commitments[0].y.a);
+        console2.log(commitments[0].y.b);
+        console2.log(commitments[0].y.c);
+
+        console2.log(ddd.x.a);
+        console2.log(ddd.x.b);
+        console2.log(ddd.x.c);
+        console2.log(ddd.y.a);
+        console2.log(ddd.y.b);
+        console2.log(ddd.y.c);
+
         r_comm = r_comm.add(
             commitments[0].mul(
                 zeta_minus_omega_inv.mul(
@@ -55,6 +78,7 @@ library BasicProtocol {
                 )
             )
         );
+
         r_comm = r_comm.add(
             commitments[1].mul(zeta_minus_omega_inv.mul((BW6FR.one().sub(b)).add(b.mul(x1.sub(x2)).mul(phi))))
         );
