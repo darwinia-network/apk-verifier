@@ -134,8 +134,7 @@ library BW6G1Affine {
             r = new bytes(96);
             r[95] = INFINITY_FLAG;
         } else {
-            Bw6Fp memory neg_y = g1.y;
-            neg_y.neg();
+            Bw6Fp memory neg_y = g1.y.neg();
             bool y_flag = g1.y.gt(neg_y);
             r = g1.x.serialize();
             if (y_flag) {

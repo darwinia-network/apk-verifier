@@ -45,9 +45,10 @@ library BW6FP {
         return (x.a > y.a || (x.a == y.a && x.b > y.b) || (x.a == y.a && x.b == y.b && x.c > x.c));
     }
 
-    function neg(Bw6Fp memory self) internal pure {
+    function neg(Bw6Fp memory self) internal pure returns (Bw6Fp memory z) {
+        z = self;
         if (!is_zero(self)) {
-            self = sub(q(), self);
+            z = sub(q(), self);
         }
     }
 

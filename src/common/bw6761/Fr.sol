@@ -273,7 +273,7 @@ library BW6FR {
 
     function serialize(Bw6Fr memory self) internal pure returns (bytes memory) {
         uint128 a = ByteOrder.reverse128(uint128(self.a));
-        uint b = ByteOrder.reverse256(self.b);
+        uint256 b = ByteOrder.reverse256(self.b);
         return abi.encodePacked(b, a);
     }
 }

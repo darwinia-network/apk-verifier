@@ -29,6 +29,28 @@ struct Radix2EvaluationDomain {
 library Radix2 {
     using BW6FR for Bw6Fr;
 
+    uint32 internal constant LOG_N = 8;
+
+    function init() internal pure returns (Radix2EvaluationDomain memory) {
+        return Radix2EvaluationDomain({
+            size: 256,
+            log_size_of_group: LOG_N,
+            size_as_field_element: Bw6Fr(0, 256),
+            size_inv: Bw6Fr(
+                0x1ac8c0bd1ad4bd9db74cabaac34a7f1, 0xdf08b7190df41e7b8fd46ecd8a4f3eb816f451e6ebd000008483b74000000001
+                ),
+            group_gen: Bw6Fr(
+                0x1002f29b90f34d050aca1e5fa3f7633, 0x712d6bc0d484c501aed11a0c88d9f8c87a0c14230db0b91cb42b84a2dce33f04
+                ),
+            group_gen_inv: Bw6Fr(
+                0x3c41de81751c63b6e0389795b5feba, 0xeffa4f9e8f3b8a87ee9ee3eabaa65f2ab40a45e807458704a002ea0add4e93c5
+                ),
+            offset: BW6FR.one(),
+            offset_inv: BW6FR.one(),
+            offset_pow_size: BW6FR.one()
+        });
+    }
+
     function serialize(Radix2EvaluationDomain memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(
             ByteOrder.reverse64(self.size),

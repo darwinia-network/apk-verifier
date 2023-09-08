@@ -15,10 +15,9 @@ library KeySet {
     using BW6G1Affine for Bw6G1;
 
     function serialize(KeysetCommitment memory self) internal pure returns (bytes memory) {
-        bytes memory x = self.pks_comm[0].serialize();
-        bytes memory y = self.pks_comm[1].serialize();
-        uint32 s = ByteOrder.reverse32(self.log_domain_size);
-        return abi.encodePacked(x, y, s);
+        return abi.encodePacked(
+            self.pks_comm[0].serialize(), self.pks_comm[1].serialize(), ByteOrder.reverse32(self.log_domain_size)
+        );
     }
 
     function hash_commitment(KeysetCommitment memory self) internal pure returns (Bls12G2 memory) {
