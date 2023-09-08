@@ -3,4 +3,5 @@ src = "src"
 out = "out"
 libs = ["lib"]
 via_ir = true
+evm_version = "shanghai"
 sender = "0x0f14341A7f464320319025540E8Fe48Ad0fe5aec"

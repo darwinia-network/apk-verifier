@@ -81,4 +81,11 @@ contract BW6FRTest is Test {
         Bw6Fr memory c = a.mul(a);
         assertTrue(e.eq(c));
     }
+
+    function test_from_random_bytes() public {
+        bytes16 input = 0x72f666c660cd4a19ce7be97ae2234c57;
+        Bw6Fr memory a = BW6FR.from_random_bytes(input);
+        Bw6Fr memory e = Bw6Fr(0, 116038178022476619441708140207551215218);
+        assertTrue(e.eq(a));
+    }
 }

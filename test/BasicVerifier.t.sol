@@ -40,7 +40,7 @@ contract BasicVerifierTest is Test {
         verifier = new BasicVerifier(pks_comm);
     }
 
-    function test_verify_aggregates() public {
+    function build_public_input() public pure returns (AccountablePublicInput memory) {
         uint256[] memory limbs = new uint[](1);
         limbs[0] = 0x7fdf7bffffbffbeffefffefbfdfffffffffff7ffdfb5fffe7ffffbefbfffffdf;
         AccountablePublicInput memory public_input = AccountablePublicInput({
@@ -56,7 +56,10 @@ contract BasicVerifierTest is Test {
             }),
             bitmask: Bitmask({limbs: limbs, padding_size: 1})
         });
+        return public_input;
+    }
 
+    function build_proof() public pure returns (SimpleProof memory) {
         SimpleProof memory proof = SimpleProof({
             register_commitments: [
                 Bw6G1({
@@ -151,7 +154,12 @@ contract BasicVerifierTest is Test {
                 })
             })
         });
+        return proof;
+    }
 
+    function test_verify_aggregates() public {
+        AccountablePublicInput memory public_input = build_public_input();
+        SimpleProof memory proof = build_proof();
         Bls12G2 memory aggregate_signature = Bls12G2(
             Bls12Fp2(
                 Bls12Fp(
@@ -202,5 +210,26 @@ contract BasicVerifierTest is Test {
         });
 
         verifier.verify_aggregates(public_input, proof, aggregate_signature, new_validator_set_commitment);
+    }
+
+    function test_restore_challenges() public {
+        AccountablePublicInput memory public_input = build_public_input();
+        SimpleProof memory proof = build_proof();
+        Challenges memory challenges = verifier.restore_challenges(public_input, proof, 5);
+    }
+
+    function build_expect_challenges() public pure returns (Challenges memory) {
+        Bw6Fr[] memory nus = new Bw6Fr[](5);
+        nus[0] = Bw6Fr({a: 0, b: 326748853883822975116025462529701613748});
+        nus[1] = Bw6Fr({a: 0, b: 325287760536316044700350054719880143709});
+        nus[2] = Bw6Fr({a: 0, b: 306197272807113859490503665346745081401});
+        nus[3] = Bw6Fr({a: 0, b: 289347418040658430559636045985989854521});
+        nus[4] = Bw6Fr({a: 0, b: 116038178022476619441708140207551215218});
+        return Challenges({
+            r: Bw6Fr({a: 0, b: 216933494478360873875513327060919268260}),
+            phi: Bw6Fr({a: 0, b: 120921066736177191681065486716030087232}),
+            zeta: Bw6Fr({a: 0, b: 301325485122193235051863397084486409516}),
+            nus: nus
+        });
     }
 }
