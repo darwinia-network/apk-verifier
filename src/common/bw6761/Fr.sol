@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "../math/Math.sol";
+import "../bytes/ByteOrder.sol";
 
 struct Bw6Fr {
     uint256 a;
@@ -267,22 +268,12 @@ library BW6FR {
     }
 
     function from_random_bytes(bytes16 input) internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0, reverse128(uint128(input)));
+        return Bw6Fr(0, ByteOrder.reverse128(uint128(input)));
     }
 
-    function reverse128(uint128 input) internal pure returns (uint128 v) {
-        v = input;
-
-        // swap bytes
-        v = ((v & 0xFF00FF00FF00FF00FF00FF00FF00FF00) >> 8) | ((v & 0x00FF00FF00FF00FF00FF00FF00FF00FF) << 8);
-
-        // swap 2-byte long pairs
-        v = ((v & 0xFFFF0000FFFF0000FFFF0000FFFF0000) >> 16) | ((v & 0x0000FFFF0000FFFF0000FFFF0000FFFF) << 16);
-
-        // swap 4-byte long pairs
-        v = ((v & 0xFFFFFFFF00000000FFFFFFFF00000000) >> 32) | ((v & 0x00000000FFFFFFFF00000000FFFFFFFF) << 32);
-
-        // swap 8-byte long pairs
-        v = (v >> 64) | (v << 64);
+    function serialize(Bw6Fr memory self) internal pure returns (bytes memory) {
+        uint128 a = ByteOrder.reverse128(uint128(self.a));
+        uint b = ByteOrder.reverse256(self.b);
+        return abi.encodePacked(b, a);
     }
 }

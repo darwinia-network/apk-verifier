@@ -2,6 +2,7 @@
 pragma solidity ^0.8.17;
 
 import "../../bw6761/Fr.sol";
+import "../../bytes/ByteOrder.sol";
 
 struct Radix2EvaluationDomain {
     /// The size of the domain.
@@ -23,4 +24,22 @@ struct Radix2EvaluationDomain {
     /// Constant coefficient for the vanishing polynomial.
     /// Equals `self.offset^self.size`.
     Bw6Fr offset_pow_size;
+}
+
+library Radix2 {
+    using BW6FR for Bw6Fr;
+
+    function serialize(Radix2EvaluationDomain memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(
+            ByteOrder.reverse64(self.size),
+            ByteOrder.reverse32(self.log_size_of_group),
+            self.size_as_field_element.serialize(),
+            self.size_inv.serialize(),
+            self.group_gen.serialize(),
+            self.group_gen_inv.serialize(),
+            self.offset.serialize(),
+            self.offset_inv.serialize(),
+            self.offset_pow_size.serialize()
+        );
+    }
 }

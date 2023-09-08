@@ -3,6 +3,7 @@ pragma solidity ^0.8.17;
 
 import "./bw6761/G1.sol";
 import "./bls12377/G2.sol";
+import "./bytes/ByteOrder.sol";
 
 struct KeysetCommitment {
     Bw6G1[2] pks_comm;
@@ -16,7 +17,7 @@ library KeySet {
     function serialize(KeysetCommitment memory self) internal pure returns (bytes memory) {
         bytes memory x = self.pks_comm[0].serialize();
         bytes memory y = self.pks_comm[1].serialize();
-        bytes memory s = to_little_endian_32(self.log_domain_size);
+        uint32 s = ByteOrder.reverse32(self.log_domain_size);
         return abi.encodePacked(x, y, s);
     }
 

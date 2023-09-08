@@ -88,4 +88,11 @@ contract BW6FRTest is Test {
         Bw6Fr memory e = Bw6Fr(0, 116038178022476619441708140207551215218);
         assertTrue(e.eq(a));
     }
+
+    function test_serialize() public {
+        Bw6Fr memory a = Bw6Fr(0x199e1755a3a4cdfa17454dba7fa7ac4, 0x0715e575b43a4ed1f47408dc2e2c97d5433a142af15266349437b343298b4b94);
+        bytes memory e = hex'944b8b2943b33794346652f12a143a43d5972c2edc0874f4d14e3ab475e51507c47afaa7db5474a1df4c3a5a75e19901';
+        console2.logBytes(a.serialize());
+        assertEq(a.serialize(), e);
+    }
 }
