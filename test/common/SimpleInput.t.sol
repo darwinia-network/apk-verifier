@@ -82,68 +82,71 @@ contract SimpleInputTest is Test {
             ],
             q_comm: Bw6G1({
                 x: Bw6Fp({
-                    a: 0xc344d1bf3342194f741e048e53530eeea6e77e66171dfa6941a753e83a3005,
-                    b: 0x6b444199ec22475c59b2a3da20d8ccda60f32e664a06f06935a5ce4e4e27e9af,
-                    c: 0x1090b8075361a3f94c023dbe5c6cd34f3b7e0d3be935edc7a3ae12be36041831
+                    a: 0x5c444925e0121022d976dfc866a39e2522f47d909f5a74f4b99c8a0bef3356,
+                    b: 0xb540e8acafce720e3cb5f728e8eceab6abef9e304220cad2b5eb7561c99d5722,
+                    c: 0x52ecdcff58c4f73aa3b3b28a194810ec7dda490deb5e370620b7d5ad7913799e
                 }),
                 y: Bw6Fp({
-                    a: 0x1738e10e0e8c242395c297c2f1527e11f5b919a3af5513b7966ab49755ad2d,
-                    b: 0x60e2829c8b3ceee815b1339bf0d14deaf47bbc1f9df9c76fc799509ba838b49f,
-                    c: 0xe7bcd52ff4aec6a2b2b916a8094ca5194e9f5dbc8865d5ed513edb49f085d068
+                    a: 0xf562cfc59c39e930ee57e447c231d24207324a4e874b88df0dbb4ce76d4635,
+                    b: 0xefe7bc153a9bb63a07e81b0f2be61b5f7c537d72edaa44abdbd7af811a34049e,
+                    c: 0x4a14dfb608f6f910c2cd1f538cbe43d4385298b544c363651ab46c1335daa5f0
                 })
             }),
+
+// proof.q_zeta: 56997258635266015621911301308014592504772048921073326687528069562407714674302952151462257818260267968206542807822
+// proof.r_zeta_omega: 147026056670396017588312534770999957296870792308472044555462994761949561945795020140294966333632266045419040787791
             register_evaluations: AffineAdditionEvaluationsWithoutBitmask({
                 keyset: [
                     Bw6Fr({
-                        a: 0x1aab27451fa488f6bd859ea437c4404,
-                        b: 0x7dafc07339e923e17e1623441d3e44b083e31105119b7cafaa6466c09da0dbe5
+                        a: 0x33ec4440640b2099c6a377c99068eb,
+                        b: 0xb3eb8902496ee9f31c9f2219abd499f4c20f9af9f7a1ca114b2daa35dd32e93a
                     }),
                     Bw6Fr({
-                        a: 0xf7c51d58d6ea4c6320f8bc5efba96a,
-                        b: 0x803aabe3237f1853af01e2d3a836c730e7360dc07086b2dd6946173bc4c4dc97
+                        a: 0x3df436cb1b376a8735b46eb680336c,
+                        b: 0x6d8df2b60f5bce9243f111431d224caf7a42ae4793a0c007f221acd7c48d57e3
                     })
                 ],
                 partial_sums: [
                     Bw6Fr({
-                        a: 0xbadb019511078f65aaea2d4d5507ae,
-                        b: 0x6140f38addc64768f5d4a20c7fa51f8ef6321c948e32e6cab3bb7acaaa40cf4e
+                        a: 0x57e43f6fbc9d5749a9780b02506199,
+                        b: 0xf98c0cc2fd65794a64432ee3f2d6616076045462d20a91280b89d10b325f5165
                     }),
                     Bw6Fr({
-                        a: 0x7872dba3cd2e1094e6f8207b3a2e85,
-                        b: 0x42af6e080c1eedb9dc82e6f6d62ca9a7a89a1035c676235f86bc33cd9e02fe5d
+                        a: 0xaf22c86144a6c39f3107bcae7e212,
+                        b: 0x1bfd7307075a929b9578282ebbf216c0b2abb7dcb70a30422011204d79252568
                     })
                 ]
             }),
             q_zeta: Bw6Fr({
-                a: 0xe9d5ae89f321d945043e5b3fb54abb,
-                b: 0x3c477b56bd48d0e6ade2edacc610780621a462b38d589bdc9188e9b79b01ee15
+                a: 0x5ecd342df0061e4aaaddd8af97c59d,
+                b: 0x4600cc857b4bfad9d6ef6cd4ff72c671ba8b206f24645f0aa94489166fe5230e
             }),
             r_zeta_omega: Bw6Fr({
-                a: 0x894256285a8d3f89e16134fe889571,
-                b: 0x29293cc6fbec9a45a5c935d81a88bdfb405cbdd4c1e81c20aca4d33b236130a9
+                a: 0xf48b1abeca5963c8907137c5e5d1d9,
+                b: 0x37a2042c45322b002088ed798a21540be66a7e162d41811c69f11580f30bcd4f
             }),
             w_at_zeta_proof: Bw6G1({
                 x: Bw6Fp({
-                    a: 0x5517af9359e4a1886d929c2a9d58715dbae9b917ff807dacecf99cd8283943,
-                    b: 0xd88c1f1bb009c7239ccd63ce2e823559a77d142809f1f74764844542424ec4b9,
-                    c: 0x6b120d822ed7d57327107f114dfebda54702dc84bb57b3871f660e93bd7744d3
+                    a: 0x8743380ea7b987543b0706379a06a73c43a9307dbda7abd154dd4ea107a77d,
+                    b: 0xb7260e3aee6badbd4a0f870ff8e502b28fdad5805693f341066e217410a67e71,
+                    c: 0xeaf4cecf3773a30f7e7916b899a4269dab7220ad18865d95fd1dd8d898277100
                 }),
                 y: Bw6Fp({
-                    a: 0xd248953ebb6ea5ba42d2e0133254b7bdffe191b0d82a91edfeae059a291dea,
-                    b: 0x940ccc84a168eec369279db1a574fc36aa4e73bc9b61bc16a0753d97153674a7,
-                    c: 0x604ae0b1aac1cfee8dd7611c9bf8808a04f94d68aab2f577827cc35f55f99e08
+                    a: 0x76976e0225f40237144b8ab6052b3af5638f249d07422197296e2c73d574b6,
+                    b: 0x801a15837bc91baf154a3d528c3bd458b894955b40381f2f73aadc9b5fa28a53,
+                    c: 0xc766295b2deafa223b4916b9523d435e68d54b4d9b40b422d03ff7d21d04f2ee
                 })
             }),
             r_at_zeta_omega_proof: Bw6G1({
                 x: Bw6Fp({
-                    a: 0x101d282c9ab5d38b9133a910c502a51594600247d9561799f25e995db9f93f4,
-                    b: 0xc5d71fa60f3952cdcd7c4b301697f1c1221fa3d40adda0b49b02539a9640bbb6,
-                    c: 0x31f5f6bdad910244e5779c3f3bc67a6c7c5945e7bfbc311c89f42c5e1fb0e647
+                    a: 0xb85aca42e6e4c7d2515fefd2f45996f068c0e9827cc97d674d97d1271789cc,
+                    b: 0xab75672a7018ac54f0400a54e8f3adcbf1cf82c034f2a0ab44e0183075ce8079,
+                    c: 0x02206d63f9c29997b74a26a11c14331fe33ba3fc8100c4b7212d53f1a5c9b911
                 }),
                 y: Bw6Fp({
-                    a: 0x7b7766063408a7c1dbcfcb427d3646910dd16b56f7d36558a178ccea9a0a34,
-                    b: 0x13afc1e91b36630d899c46fb46dbdaa8ca4f46a45e685f9431f512412a038b34,
-                    c: 0x78248634b57cb636ff32fb62cef1ad10416907da29e07391dfff349873792dd3
+                    a: 0xbf881fbcf359197cd337fa1228cd1792e6f7b50d78dda2a117d647b0740b01,
+                    b: 0x5f54ca1c008eed25dcd1d0185454c852010a960b736e1ed5507ad9d10efcd8a5,
+                    c: 0x7143320b0a18938fdfcf0440727b6da8d55587b942e68e6fae8e7122ca588d54
                 })
             })
         });

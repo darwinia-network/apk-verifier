@@ -37,7 +37,7 @@ library BW6G1Affine {
     /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
     /// Else, returns `(x, -y)`, where `self = (x, y)`.
     function neg(Bw6G1 memory self) internal pure {
-        self.y.neg();
+        self.y = self.y.neg();
     }
 
     function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory) {
