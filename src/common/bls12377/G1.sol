@@ -8,9 +8,14 @@ struct Bls12G1 {
     Bls12Fp y;
 }
 
-library BLS12G1 {
+library BLS12G1Affine {
+    using BLS12FP for Bls12Fp;
+
     // BLS12_377_G1ADD
     uint256 private constant G1_ADD = 0x15;
+
+    bytes1 private constant INFINITY_FLAG = bytes1(0x40);
+    bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);
 
     function generator() internal pure returns (Bls12G1 memory) {
         return Bls12G1({
@@ -28,7 +33,19 @@ library BLS12G1 {
         });
     }
 
-    function point_in_g1_complement() internal pure returns (Bls12G1 memory) {
+    function zero() internal pure returns (Bls12G1 memory) {
+        return Bls12G1(BLS12FP.zero(), BLS12FP.zero());
+    }
+
+    function is_zero(Bls12G1 memory p) internal pure returns (bool) {
+        return p.x.is_zero() && p.y.is_zero();
+    }
+
+    function is_infinity(Bls12G1 memory p) internal pure returns (bool) {
+        return is_zero(p);
+    }
+
+    function complement() internal pure returns (Bls12G1 memory) {
         return Bls12G1({x: Bls12Fp(0, 0), y: Bls12Fp(0, 1)});
     }
 
@@ -57,5 +74,19 @@ library BLS12G1 {
 
     function from(uint256[4] memory x) internal pure returns (Bls12G1 memory) {
         return Bls12G1(Bls12Fp(x[0], x[1]), Bls12Fp(x[2], x[3]));
+    }
+
+    function serialize(Bls12G1 memory g1) internal pure returns (bytes memory r) {
+        if (is_infinity(g1)) {
+            r = new bytes(64);
+            r[63] = INFINITY_FLAG;
+        } else {
+            Bls12Fp memory neg_y = g1.y.neg();
+            bool y_flag = g1.y.gt(neg_y);
+            r = g1.x.serialize();
+            if (y_flag) {
+                r[63] |= Y_IS_NEGATIVE;
+            }
+        }
     }
 }

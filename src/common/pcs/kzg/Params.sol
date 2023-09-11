@@ -56,10 +56,6 @@ library KZGParams {
     }
 
     function serialize(RVK memory self) internal view returns (bytes memory) {
-        return abi.encodePacked(
-            self.g1.serialize(),
-            self.g2.serialize(),
-            self.tau_in_g2.serialize()
-        );
+        return abi.encodePacked(self.g1.serialize(), self.g2.serialize(), self.tau_in_g2.serialize());
     }
 }

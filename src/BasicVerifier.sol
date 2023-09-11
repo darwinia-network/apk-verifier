@@ -30,7 +30,7 @@ contract BasicVerifier {
     using KZG for AccumulatedOpening;
     using KeySet for KeysetCommitment;
     using BasicProtocol for AffineAdditionEvaluations;
-    using SimpleTranscript for bytes;
+    using SimpleTranscript for Transcript;
     using Radix2 for Radix2EvaluationDomain;
     using KZGParams for RVK;
 
@@ -98,26 +98,27 @@ contract BasicVerifier {
     }
 
     function restore_challenges(
-        AccountablePublicInput calldata, /*public_input*/
-        SimpleProof calldata, /*proof*/
-        uint256 /*batch_size*/
+        AccountablePublicInput calldata public_input,
+        SimpleProof calldata proof,
+        uint256 batch_size
     ) public view returns (Challenges memory) {
-        bytes memory apk_transcript = SimpleTranscript.init("");
-        apk_transcript.set_protocol_params(Radix2.init().serialize(), kzg_pvk().serialize());
-        apk_transcript.set_keyset_commitment(pks_comm.serialize());
+        Transcript memory transcript = SimpleTranscript.init("apk_proof");
+        transcript.set_protocol_params(Radix2.init().serialize(), kzg_pvk().serialize());
+        transcript.set_keyset_commitment(pks_comm.serialize());
 
-        Bw6Fr[] memory nus = new Bw6Fr[](5);
-        nus[0] = Bw6Fr({a: 0, b: 295675319708202552530236744222952976411});
-        nus[1] = Bw6Fr({a: 0, b: 81967839698258153224494350487614325862});
-        nus[2] = Bw6Fr({a: 0, b: 273685501643805143626396666501645473096});
-        nus[3] = Bw6Fr({a: 0, b: 279780497664716091553307857641992028376});
-        nus[4] = Bw6Fr({a: 0, b: 249996081711359616874775486460835326939});
-        return Challenges({
-            r: Bw6Fr({a: 0, b: 316184119047170985678859850286058587173}),
-            phi: Bw6Fr({a: 0, b: 229431583332175287952736889360130265601}),
-            zeta: Bw6Fr({a: 0, b: 205713981876823471916128338707288082226}),
-            nus: nus
-        });
+        transcript.append_public_input(public_input.serialize());
+        transcript.append_register_commitments(proof.register_commitments.serialize());
+        Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
+        transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
+        Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
+        transcript.append_quotient_commitment(proof.q_comm.serialize());
+        Bw6Fr memory zeta = transcript.get_evaluation_point();
+        transcript.append_evaluations(
+            proof.register_evaluations.serialize(), proof.q_zeta.serialize(), proof.r_zeta_omega.serialize()
+        );
+        Bw6Fr memory nus = transcript.get_kzg_aggregation_challenges(batch_size);
+
+        return Challenges({r: r, phi: phi, zeta: zeta, nus: nus});
     }
 
     function validate_evaluations(

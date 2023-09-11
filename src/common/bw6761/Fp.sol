@@ -85,6 +85,7 @@ library BW6FP {
         }
     }
 
+    // TODO
     function serialize(Bw6Fp memory x) internal pure returns (bytes memory) {
         bytes memory r = new bytes(96);
         bytes32 a = bytes32(x.a);

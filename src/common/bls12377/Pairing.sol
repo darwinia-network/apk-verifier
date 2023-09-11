@@ -14,7 +14,7 @@ library BLS12Pairing {
         returns (bool)
     {
         Bls12G1[] memory a = new Bls12G1[](2);
-        a[0] = BLS12G1.neg_generator();
+        a[0] = BLS12G1Affine.neg_generator();
         a[1] = public_key;
         Bls12G2[] memory b = new Bls12G2[](2);
         b[0] = signature;

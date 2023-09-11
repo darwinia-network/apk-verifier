@@ -27,7 +27,7 @@ library BasicProtocol {
     using BW6FR for Bw6Fr;
     using BLS12FP for Bls12Fp;
     using BW6G1Affine for Bw6G1;
-    using BLS12G1 for Bls12G1;
+    using BLS12G1Affine for Bls12G1;
 
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
@@ -146,7 +146,7 @@ library BasicProtocol {
         Bw6Fr memory x1,
         Bw6Fr memory y1
     ) internal view returns (Bw6Fr memory, Bw6Fr memory) {
-        Bls12G1 memory h = BLS12G1.point_in_g1_complement();
+        Bls12G1 memory h = BLS12G1Affine.complement();
         Bls12G1 memory apk_plus_h = h.add(apk);
         Bw6Fr memory hx = h.x.into();
         Bw6Fr memory hy = h.y.into();
