@@ -2,10 +2,11 @@
 pragma solidity ^0.8.17;
 
 import "./Bits.sol";
+import "./bytes/ByteOrder.sol";
 
 struct Bitmask {
     uint256[] limbs;
-    uint8 padding_size;
+    uint64 padding_size;
 }
 
 // Inspired: https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/Bitfield.sol
@@ -24,6 +25,8 @@ library BitMask {
     uint256 internal constant M128 = 0x00000000000000000000000000000000ffffffffffffffffffffffffffffffff;
 
     uint256 internal constant BITS_IN_LIMB = 256;
+
+    uint256 internal constant NNNN = 4;
 
     /// @notice Calculates the number of set bits by using the hamming weight of the bitfield.
     /// The algorithm below is implemented after https://en.wikipedia.org/wiki/Hamming_weight#Efficient_implementation.
@@ -64,12 +67,12 @@ library BitMask {
         return self.limbs[part].bit(b) == 1;
     }
 
-    // TODO:
+    // TODO: only support limbs len == 1
     function serialize(Bitmask memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(
-            // 7fdf7bffffbffbeffefffefbfdfffffffffff7ffdfb5fffe7ffffbefbfffffdf
-            hex"dfffffbfeffbff7ffeffb5dffff7fffffffffffdfbfefffeeffbbfffff7bdf7f",
-            hex"0100000000000000"
+            ByteOrder.reverse64(uint64(self.limbs.length * NNNN)),
+            ByteOrder.reverse256(self.limbs[0]),
+            ByteOrder.reverse64(self.padding_size)
         );
     }
 }

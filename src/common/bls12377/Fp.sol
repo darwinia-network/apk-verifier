@@ -68,8 +68,8 @@ library BLS12FP {
     }
 
     function serialize(Bls12Fp memory self) internal pure returns (bytes memory) {
-        uint256 a = ByteOrder.reverse256(self.a);
+        uint128 a = ByteOrder.reverse128(uint128(self.a));
         uint256 b = ByteOrder.reverse256(self.b);
-        return abi.encodePacked(b, uint192(a));
+        return abi.encodePacked(b, a);
     }
 }
