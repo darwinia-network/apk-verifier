@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "../src/BasicVerifier.sol";
 import "../src/common/bw6761/G1.sol";
-import "../src/common/SimpleProof.sol";
 import "./common/SimpleInput.t.sol";
 
 contract BasicVerifierTest is SimpleInputTest {
@@ -14,104 +13,6 @@ contract BasicVerifierTest is SimpleInputTest {
     function setUp() public {
         Bw6G1[2] memory pks_comm = [pks_comm_x, pks_comm_y];
         verifier = new BasicVerifier(pks_comm);
-    }
-
-    function build_proof() public pure returns (SimpleProof memory) {
-        SimpleProof memory proof = SimpleProof({
-            register_commitments: [
-                Bw6G1({
-                    x: Bw6Fp({
-                        a: 0x6ff133c54b70d73a290896c028c511f071093db38b576ba3b094a33de896ce,
-                        b: 0x063e7b97610b3eda144cacfe44bf5a73f3dbaabe06399c3759a4942ea0377052,
-                        c: 0xd968e9f5cd3bf1e80de678bc32f2e2ac7e29528667129ba1956753165420e561
-                    }),
-                    y: Bw6Fp({
-                        a: 0x4982772a26252e29d42b88940198394085cb34fc32b7c64ab2b6426da8fb67,
-                        b: 0xa4ee72ac3286bc1ef300af56312233f5f03085abcac859dfd5aca0cf6ead212b,
-                        c: 0x69131f49bf7fc36a67263489a5ce79f27710c5e81d5099a02910d54b0bbf236f
-                    })
-                }),
-                Bw6G1({
-                    x: Bw6Fp({
-                        a: 0xd10ba796089ac633dc6b884fe6f065fd633281ac5ec8703bb870ba2fb1c299,
-                        b: 0x0d696f2b81e9edc75ca05c755905632417cbdedc817998ecbcdf96a44e805ddf,
-                        c: 0x883509b33e6d2c317d9093e82e0d8e52939a37b0e088c29048ddd9762e5e17f7
-                    }),
-                    y: Bw6Fp({
-                        a: 0xef9b9632f0eb98c6274788b1c7082020bba26223a512c631a4e02d30f00595,
-                        b: 0x4ae54f9aa01a90d9742b33b8ef43f4b2092e8c9e008c43695373691b4f77a4a3,
-                        c: 0x04a98431231ea88af3e0a32fedc2dadd63d0b08adc12fe4ae14521d7e42358f3
-                    })
-                })
-            ],
-            q_comm: Bw6G1({
-                x: Bw6Fp({
-                    a: 0xc344d1bf3342194f741e048e53530eeea6e77e66171dfa6941a753e83a3005,
-                    b: 0x6b444199ec22475c59b2a3da20d8ccda60f32e664a06f06935a5ce4e4e27e9af,
-                    c: 0x1090b8075361a3f94c023dbe5c6cd34f3b7e0d3be935edc7a3ae12be36041831
-                }),
-                y: Bw6Fp({
-                    a: 0x1738e10e0e8c242395c297c2f1527e11f5b919a3af5513b7966ab49755ad2d,
-                    b: 0x60e2829c8b3ceee815b1339bf0d14deaf47bbc1f9df9c76fc799509ba838b49f,
-                    c: 0xe7bcd52ff4aec6a2b2b916a8094ca5194e9f5dbc8865d5ed513edb49f085d068
-                })
-            }),
-            register_evaluations: AffineAdditionEvaluationsWithoutBitmask({
-                keyset: [
-                    Bw6Fr({
-                        a: 0x1aab27451fa488f6bd859ea437c4404,
-                        b: 0x7dafc07339e923e17e1623441d3e44b083e31105119b7cafaa6466c09da0dbe5
-                    }),
-                    Bw6Fr({
-                        a: 0xf7c51d58d6ea4c6320f8bc5efba96a,
-                        b: 0x803aabe3237f1853af01e2d3a836c730e7360dc07086b2dd6946173bc4c4dc97
-                    })
-                ],
-                partial_sums: [
-                    Bw6Fr({
-                        a: 0xbadb019511078f65aaea2d4d5507ae,
-                        b: 0x6140f38addc64768f5d4a20c7fa51f8ef6321c948e32e6cab3bb7acaaa40cf4e
-                    }),
-                    Bw6Fr({
-                        a: 0x7872dba3cd2e1094e6f8207b3a2e85,
-                        b: 0x42af6e080c1eedb9dc82e6f6d62ca9a7a89a1035c676235f86bc33cd9e02fe5d
-                    })
-                ]
-            }),
-            q_zeta: Bw6Fr({
-                a: 0xe9d5ae89f321d945043e5b3fb54abb,
-                b: 0x3c477b56bd48d0e6ade2edacc610780621a462b38d589bdc9188e9b79b01ee15
-            }),
-            r_zeta_omega: Bw6Fr({
-                a: 0x894256285a8d3f89e16134fe889571,
-                b: 0x29293cc6fbec9a45a5c935d81a88bdfb405cbdd4c1e81c20aca4d33b236130a9
-            }),
-            w_at_zeta_proof: Bw6G1({
-                x: Bw6Fp({
-                    a: 0x5517af9359e4a1886d929c2a9d58715dbae9b917ff807dacecf99cd8283943,
-                    b: 0xd88c1f1bb009c7239ccd63ce2e823559a77d142809f1f74764844542424ec4b9,
-                    c: 0x6b120d822ed7d57327107f114dfebda54702dc84bb57b3871f660e93bd7744d3
-                }),
-                y: Bw6Fp({
-                    a: 0xd248953ebb6ea5ba42d2e0133254b7bdffe191b0d82a91edfeae059a291dea,
-                    b: 0x940ccc84a168eec369279db1a574fc36aa4e73bc9b61bc16a0753d97153674a7,
-                    c: 0x604ae0b1aac1cfee8dd7611c9bf8808a04f94d68aab2f577827cc35f55f99e08
-                })
-            }),
-            r_at_zeta_omega_proof: Bw6G1({
-                x: Bw6Fp({
-                    a: 0x101d282c9ab5d38b9133a910c502a51594600247d9561799f25e995db9f93f4,
-                    b: 0xc5d71fa60f3952cdcd7c4b301697f1c1221fa3d40adda0b49b02539a9640bbb6,
-                    c: 0x31f5f6bdad910244e5779c3f3bc67a6c7c5945e7bfbc311c89f42c5e1fb0e647
-                }),
-                y: Bw6Fp({
-                    a: 0x7b7766063408a7c1dbcfcb427d3646910dd16b56f7d36558a178ccea9a0a34,
-                    b: 0x13afc1e91b36630d899c46fb46dbdaa8ca4f46a45e685f9431f512412a038b34,
-                    c: 0x78248634b57cb636ff32fb62cef1ad10416907da29e07391dfff349873792dd3
-                })
-            })
-        });
-        return proof;
     }
 
     function test_verify_aggregates() public {

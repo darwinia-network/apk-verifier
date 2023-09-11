@@ -11,8 +11,8 @@ struct KeysetCommitment {
 }
 
 library KeySet {
-    using BLS12G2 for bytes;
     using BW6G1Affine for Bw6G1;
+    using BLS12G2Affine for bytes;
 
     function serialize(KeysetCommitment memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(

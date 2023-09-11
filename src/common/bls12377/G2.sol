@@ -8,7 +8,7 @@ struct Bls12G2 {
     Bls12Fp2 y;
 }
 
-library BLS12G2 {
+library BLS12G2Affine {
     // TODO: switch to better hash to curve when available
     function hash_to_curve(bytes memory message) internal pure returns (Bls12G2 memory) {
         bytes memory r1 =
