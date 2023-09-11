@@ -215,7 +215,7 @@ contract BasicVerifierTest is Test {
     function test_restore_challenges() public {
         AccountablePublicInput memory public_input = build_public_input();
         SimpleProof memory proof = build_proof();
-        Challenges memory challenges = verifier.restore_challenges(public_input, proof, 5);
+        (Challenges memory challenges, Transcript memory fsrng) = verifier.restore_challenges(public_input, proof, 5);
     }
 
     function build_expect_challenges() public pure returns (Challenges memory) {
@@ -231,5 +231,9 @@ contract BasicVerifierTest is Test {
             zeta: Bw6Fr({a: 0, b: 151549136533082271949031659198628422881}),
             nus: nus
         });
+    }
+
+    function rand1() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 164327726090584941194031145723716885599);
     }
 }

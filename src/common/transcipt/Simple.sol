@@ -110,4 +110,11 @@ library SimpleTranscript {
         update(self, label);
         update(self, message);
     }
+
+    function rand_u128(Transcript memory self) internal pure returns (Bw6Fr memory) {
+        update(self, hex"00000000");
+        update(self, hex"00000000");
+        bytes16 out = finalize(self);
+        return BW6FR.from_random_bytes(out);
+    }
 }

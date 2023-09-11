@@ -7,6 +7,7 @@ import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
 import "./common/bls12377/Pairing.sol";
 import "./common/bw6761/Fr.sol";
+import "./common/bw6761/G1.sol";
 import "./common/pcs/kzg/KZG.sol";
 import "./common/pcs/aggregation/Single.sol";
 import "./common/poly/domain/Radix2.sol";
@@ -33,6 +34,8 @@ contract BasicVerifier {
     using SimpleTranscript for Transcript;
     using Radix2 for Radix2EvaluationDomain;
     using KZGParams for RVK;
+    using PublicInput for AccountablePublicInput;
+    using BW6G1Affine for Bw6G1;
 
     KeysetCommitment public pks_comm;
 
@@ -80,7 +83,8 @@ contract BasicVerifier {
         view
         returns (bool)
     {
-        Challenges memory challenges = restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
+        (Challenges memory challenges, Transcript memory fsrng) =
+            restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
         Bw6Fr memory b_at_zeta = challenges.zeta.barycentric_eval_binary_at(public_input.bitmask, domain());
 
@@ -90,7 +94,7 @@ contract BasicVerifier {
             partial_sums: proof.register_evaluations.partial_sums
         });
 
-        validate_evaluations(proof, evaluations_with_bitmask, challenges, evals_at_zeta);
+        validate_evaluations(proof, evaluations_with_bitmask, challenges, fsrng, evals_at_zeta);
         Bw6Fr[] memory constraint_polynomial_evals =
             evaluations_with_bitmask.evaluate_constraint_polynomials(public_input.apk, evals_at_zeta);
         Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
@@ -101,30 +105,41 @@ contract BasicVerifier {
         AccountablePublicInput calldata public_input,
         SimpleProof calldata proof,
         uint256 batch_size
-    ) public view returns (Challenges memory) {
+    ) public view returns (Challenges memory, Transcript memory) {
         Transcript memory transcript = SimpleTranscript.init("apk_proof");
         transcript.set_protocol_params(Radix2.init().serialize(), kzg_pvk().serialize());
         transcript.set_keyset_commitment(pks_comm.serialize());
 
         transcript.append_public_input(public_input.serialize());
-        transcript.append_register_commitments(proof.register_commitments.serialize());
+        transcript.append_register_commitments(
+            abi.encodePacked(proof.register_commitments[0].serialize(), proof.register_commitments[1].serialize())
+        );
         Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
-        transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
+        // Packed:
+        // transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
         Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
         transcript.append_quotient_commitment(proof.q_comm.serialize());
         Bw6Fr memory zeta = transcript.get_evaluation_point();
         transcript.append_evaluations(
-            proof.register_evaluations.serialize(), proof.q_zeta.serialize(), proof.r_zeta_omega.serialize()
+            abi.encodePacked(
+                proof.register_evaluations.keyset[0].serialize(),
+                proof.register_evaluations.keyset[1].serialize(),
+                proof.register_evaluations.partial_sums[0].serialize(),
+                proof.register_evaluations.partial_sums[1].serialize()
+            ),
+            proof.q_zeta.serialize(),
+            proof.r_zeta_omega.serialize()
         );
-        Bw6Fr memory nus = transcript.get_kzg_aggregation_challenges(batch_size);
+        Bw6Fr[] memory nus = transcript.get_kzg_aggregation_challenges(batch_size);
 
-        return Challenges({r: r, phi: phi, zeta: zeta, nus: nus});
+        return (Challenges({r: r, phi: phi, zeta: zeta, nus: nus}), SimpleTranscript.simple_fiat_shamir_rng(transcript));
     }
 
     function validate_evaluations(
         SimpleProof memory proof,
         AffineAdditionEvaluations memory protocol,
         Challenges memory challenges,
+        Transcript memory fsrng,
         LagrangeEvaluations memory evals_at_zeta
     ) internal view {
         // KZG check
@@ -166,18 +181,10 @@ contract BasicVerifier {
         openings[1] = opening_at_zeta_omega;
         Bw6Fr[] memory coeffs = new Bw6Fr[](2);
         coeffs[0] = BW6FR.one();
-        coeffs[1] = rand1();
+        coeffs[1] = fsrng.rand_u128();
         AccumulatedOpening memory acc_opening = openings.accumulate(coeffs, kzg_pvk());
         // KZG verification, lazy subgroup check
         require(acc_opening.verify_accumulated(kzg_pvk()), "!KZG verification");
-    }
-
-    function rand1() internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0, 90446104354498767706852358120428536180);
-    }
-
-    function rand2() internal pure returns (Bw6Fr memory) {
-        return Bw6Fr(0, 73159356298389445321185536595177378997);
     }
 
     function kzg_pvk() public pure returns (RVK memory) {

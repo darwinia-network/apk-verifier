@@ -63,4 +63,13 @@ library BitMask {
         uint8 b = uint8(index & 0xFF);
         return self.limbs[part].bit(b) == 1;
     }
+
+    // TODO:
+    function serialize(Bitmask memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(
+            // 7fdf7bffffbffbeffefffefbfdfffffffffff7ffdfb5fffe7ffffbefbfffffdf
+            hex"dfffffbfeffbff7ffeffb5dffff7fffffffffffdfbfefffeeffbbfffff7bdf7f",
+            hex"0100000000000000"
+        );
+    }
 }

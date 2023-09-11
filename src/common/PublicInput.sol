@@ -11,6 +11,7 @@ struct AccountablePublicInput {
 
 library PublicInput {
     using BLS12G1Affine for Bls12G1;
+    using BitMask for Bitmask;
 
     function serialize(AccountablePublicInput memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(self.apk.serialize(), self.bitmask.serialize());
