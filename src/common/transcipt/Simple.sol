@@ -2,12 +2,14 @@
 pragma solidity ^0.8.17;
 
 import "../bw6761/Fr.sol";
+import "../bytes/ByteOrder.sol";
 
 struct Transcript {
     bytes buffer;
 }
 
 library SimpleTranscript {
+
     function simple_fiat_shamir_rng(Transcript memory self) internal pure returns (Transcript memory) {
         Transcript memory t = init(self.buffer);
         update(t, "verifier_secret");
@@ -113,8 +115,12 @@ library SimpleTranscript {
 
     function rand_u128(Transcript memory self) internal pure returns (Bw6Fr memory) {
         update(self, hex"00000000");
+        bytes16 x = finalize(self);
+        uint64 a = ByteOrder.reverse64(uint64(bytes8(x)));
         update(self, hex"00000000");
-        bytes16 out = finalize(self);
-        return BW6FR.from_random_bytes(out);
+        bytes16 y = finalize(self);
+        uint64 b = ByteOrder.reverse64(uint64((bytes8(y))));
+        uint256 r = (b << 64) | a;
+        return Bw6Fr(0, r);
     }
 }

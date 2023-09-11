@@ -78,14 +78,14 @@ library BLS12G1Affine {
 
     function serialize(Bls12G1 memory g1) internal pure returns (bytes memory r) {
         if (is_infinity(g1)) {
-            r = new bytes(64);
-            r[63] = INFINITY_FLAG;
+            r = new bytes(56);
+            r[55] = INFINITY_FLAG;
         } else {
             Bls12Fp memory neg_y = g1.y.neg();
             bool y_flag = g1.y.gt(neg_y);
             r = g1.x.serialize();
             if (y_flag) {
-                r[63] |= Y_IS_NEGATIVE;
+                r[55] |= Y_IS_NEGATIVE;
             }
         }
     }
