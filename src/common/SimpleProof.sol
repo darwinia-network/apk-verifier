@@ -18,3 +18,10 @@ struct SimpleProof {
     Bw6G1 w_at_zeta_proof;
     Bw6G1 r_at_zeta_omega_proof;
 }
+
+struct Challenges {
+    Bw6Fr r;
+    Bw6Fr phi;
+    Bw6Fr zeta;
+    Bw6Fr[] nus;
+}

@@ -27,7 +27,7 @@ library BW6G2Affine {
         return is_zero(p);
     }
 
-    function serialize(Bw6G2 memory g2) internal view returns (bytes memory r) {
+    function serialize(Bw6G2 memory g2) internal pure returns (bytes memory r) {
         if (is_infinity(g2)) {
             r = new bytes(96);
             r[95] = INFINITY_FLAG;

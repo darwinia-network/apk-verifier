@@ -14,13 +14,6 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
-struct Challenges {
-    Bw6Fr r;
-    Bw6Fr phi;
-    Bw6Fr zeta;
-    Bw6Fr[] nus;
-}
-
 contract BasicVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -117,6 +110,7 @@ contract BasicVerifier {
         Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
         // Packed:
         // transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
+        transcript.append_2nd_round_register_commitments("");
         Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
         transcript.append_quotient_commitment(proof.q_comm.serialize());
         Bw6Fr memory zeta = transcript.get_evaluation_point();

@@ -153,4 +153,22 @@ contract SimpleInputTest is Test {
         return proof;
     }
 
+    function build_expect_challenges() public pure returns (Challenges memory) {
+        Bw6Fr[] memory nus = new Bw6Fr[](5);
+        nus[0] = Bw6Fr({a: 0, b: 187327990167567867229177518620072426364});
+        nus[1] = Bw6Fr({a: 0, b: 254476786610760096525343445161959831212});
+        nus[2] = Bw6Fr({a: 0, b: 205283876661423223107334421792536336365});
+        nus[3] = Bw6Fr({a: 0, b: 61294691211413790555474494242447281232});
+        nus[4] = Bw6Fr({a: 0, b: 173112105445287944153414230471618529485});
+        return Challenges({
+            r: Bw6Fr({a: 0, b: 225088521125632115816158335205155224812}),
+            phi: Bw6Fr({a: 0, b: 124971442025886606170786713254051627568}),
+            zeta: Bw6Fr({a: 0, b: 151549136533082271949031659198628422881}),
+            nus: nus
+        });
+    }
+
+    function rand() internal pure returns (Bw6Fr memory) {
+        return Bw6Fr(0, 264185912457056518285248903647488235283);
+    }
 }
