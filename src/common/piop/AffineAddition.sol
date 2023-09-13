@@ -6,8 +6,6 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
-import {console2} from "forge-std/console2.sol";
-
 struct PartialSumsCommitments {
     Bw6G1[2] partial_sums;
 }
@@ -49,15 +47,6 @@ library BasicProtocol {
         // X3 term = b(x1-x2)^2 + b(y1-y2)phi + (1-b)phi
         // Y3 term = (1-b) + b(x1-x2)phi
         // ...and both multiplied by (\zeta - \omega^{n-1}) // = zeta_minus_omega_inv
-
-        console2.logBytes(zeta_minus_omega_inv.debug());
-        console2.logBytes(b.debug());
-        console2.logBytes(x1.debug());
-        console2.logBytes(x2.debug());
-        console2.logBytes(y1.debug());
-        console2.logBytes(y2.debug());
-        console2.logBytes(phi.debug());
-        console2.logBytes(BW6FR.one().debug());
 
         r_comm = r_comm.add(
             commitments[0].mul(

@@ -102,4 +102,8 @@ library BW6FP {
         }
         return r;
     }
+
+    function debug(Bw6Fp memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(self.a, self.b, self.c);
+    }
 }

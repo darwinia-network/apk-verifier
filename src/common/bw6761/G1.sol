@@ -106,14 +106,14 @@ library BW6G1Affine {
         for (uint256 i = 0; i < k; i++) {
             Bw6G1 memory base = bases[i];
             Bw6Fr memory scalar = scalars[i];
-            input[i * k] = base.x.a;
-            input[i * k + 1] = base.x.b;
-            input[i * k + 2] = base.x.c;
-            input[i * k + 3] = base.y.a;
-            input[i * k + 4] = base.y.b;
-            input[i * k + 5] = base.y.c;
-            input[i * k + 6] = scalar.a;
-            input[i * k + 7] = scalar.b;
+            input[i * 8] = base.x.a;
+            input[i * 8 + 1] = base.x.b;
+            input[i * 8 + 2] = base.x.c;
+            input[i * 8 + 3] = base.y.a;
+            input[i * 8 + 4] = base.y.b;
+            input[i * 8 + 5] = base.y.c;
+            input[i * 8 + 6] = scalar.a;
+            input[i * 8 + 7] = scalar.b;
         }
         uint256[6] memory output;
 

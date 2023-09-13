@@ -14,6 +14,8 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 contract BasicVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -29,6 +31,9 @@ contract BasicVerifier {
     using KZGParams for RVK;
     using PublicInput for AccountablePublicInput;
     using BW6G1Affine for Bw6G1;
+
+    // debug
+    using BW6FP for Bw6Fp;
 
     KeysetCommitment public pks_comm;
 
@@ -145,14 +150,14 @@ contract BasicVerifier {
 
         // Aggregate the commitments to be opened in \zeta, using the challenge \nu.
         // aggregate evaluation claims in zeta
-        Bw6G1[] memory commitments = new Bw6G1[](8);
+        Bw6G1[] memory commitments = new Bw6G1[](5);
         commitments[0] = pks_comm.pks_comm[0];
         commitments[1] = pks_comm.pks_comm[1];
         commitments[2] = proof.register_commitments[0];
         commitments[3] = proof.register_commitments[1];
         commitments[4] = proof.q_comm;
         // ...together with the corresponding values
-        Bw6Fr[] memory register_evals = new Bw6Fr[](8);
+        Bw6Fr[] memory register_evals = new Bw6Fr[](5);
         register_evals[0] = proof.register_evaluations.keyset[0];
         register_evals[1] = proof.register_evaluations.keyset[1];
         register_evals[2] = proof.register_evaluations.partial_sums[0];
@@ -160,6 +165,10 @@ contract BasicVerifier {
         register_evals[4] = proof.q_zeta;
         (Bw6G1 memory w_comm, Bw6Fr memory w_at_zeta) =
             commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
+
+        console2.logBytes(w_comm.x.debug());
+        console2.logBytes(w_comm.y.debug());
+        console2.logBytes(w_at_zeta.debug());
 
         // batched KZG openning
         KzgOpening memory opening_at_zeta =
