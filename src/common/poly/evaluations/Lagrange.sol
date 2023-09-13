@@ -63,16 +63,20 @@ library Lagrange {
         Bw6Fr memory acc = z;
 
         Bw6Fr memory one = BW6FR.one();
-        for (uint256 i = N; i > 0; i--) {
-            bool b = evals.at(i - 1);
+        uint256 size = evals.size();
+        uint256 c = 0;
+        for (uint256 i = 0; i < size; i++) {
+            bool b = evals.at(i);
             if (b) {
-                li_inv[N - i] = acc.sub(one);
-                li_inv[N - i].inverse();
+                li_inv[c] = acc.sub(one);
+                li_inv[c].inverse();
+                c++;
             }
             acc = acc.mul(dm.group_gen_inv);
         }
 
         Bw6Fr memory s = li_inv.sum();
+
         return z_n_minus_one_div_n.mul(s);
     }
 }

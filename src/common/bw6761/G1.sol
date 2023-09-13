@@ -13,11 +13,14 @@ library BW6G1Affine {
     using BW6FP for Bw6Fp;
 
     // BW6_G1_ADD
-    uint256 private constant G1_ADD = 0x1e;
+    // uint256 private constant G1_ADD = 0x1e;
+    uint256 private constant G1_ADD = 0x080a;
     // BW6_G1_MUL
-    uint8 private constant G1_MUL = 0x1f;
+    // uint256 private constant G1_MUL = 0x1f;
+    uint256 private constant G1_MUL = 0x080b;
     // BW6_G1_MULTIEXP
-    uint8 private constant G1_MULTIEXP = 0x20;
+    // uint256 private constant G1_MULTIEXP = 0x20;
+    uint256 private constant G1_MULTIEXP = 0x080c;
 
     bytes1 private constant INFINITY_FLAG = bytes1(0x40);
     bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);

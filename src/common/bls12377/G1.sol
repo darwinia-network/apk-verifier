@@ -12,7 +12,8 @@ library BLS12G1Affine {
     using BLS12FP for Bls12Fp;
 
     // BLS12_377_G1ADD
-    uint256 private constant G1_ADD = 0x15;
+    // uint256 private constant G1_ADD = 0x15;
+    uint256 private constant G1_ADD = 0x0801;
 
     bytes1 private constant INFINITY_FLAG = bytes1(0x40);
     bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);

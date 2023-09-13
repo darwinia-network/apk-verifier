@@ -276,4 +276,8 @@ library BW6FR {
         uint256 b = ByteOrder.reverse256(self.b);
         return abi.encodePacked(b, a);
     }
+
+    function debug(Bw6Fr memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(self.a, self.b);
+    }
 }

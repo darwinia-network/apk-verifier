@@ -6,7 +6,8 @@ import "./G2.sol";
 
 library BLS12Pairing {
     // BLS12_377_PAIRING
-    uint8 private constant BLS12_PAIRING = 0x1b;
+    // uint256 private constant BLS12_PAIRING = 0x1b;
+    uint256 private constant BLS12_PAIRING = 0x0807;
 
     function verify(Bls12G1 memory public_key, Bls12G2 memory signature, Bls12G2 memory message)
         internal
