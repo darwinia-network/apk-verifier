@@ -166,10 +166,6 @@ contract BasicVerifier {
         (Bw6G1 memory w_comm, Bw6Fr memory w_at_zeta) =
             commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
 
-        console2.logBytes(w_comm.x.debug());
-        console2.logBytes(w_comm.y.debug());
-        console2.logBytes(w_at_zeta.debug());
-
         // batched KZG openning
         KzgOpening memory opening_at_zeta =
             KzgOpening({c: w_comm, x: challenges.zeta, y: w_at_zeta, proof: proof.w_at_zeta_proof});

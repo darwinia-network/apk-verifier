@@ -114,13 +114,13 @@ library SimpleTranscript {
     }
 
     function rand_u128(Transcript memory self) internal pure returns (Bw6Fr memory) {
-        update(self, hex"00000000");
+        update(self, hex"0000000000000000");
         bytes16 x = finalize(self);
         uint64 a = ByteOrder.reverse64(uint64(bytes8(x)));
-        update(self, hex"00000000");
+        update(self, hex"0000000000000000");
         bytes16 y = finalize(self);
         uint64 b = ByteOrder.reverse64(uint64((bytes8(y))));
-        uint256 r = (b << 64) | a;
+        uint256 r = (uint256(b) << 64) | uint256(a);
         return Bw6Fr(0, r);
     }
 }
