@@ -45,22 +45,11 @@ library KZG {
             accs[i] = (opening.proof.mul(opening.x)).add(opening.c);
             proofs[i] = opening.proof;
             ys[i] = opening.y;
-
-
-            console2.logBytes(accs[i].x.debug());
-            console2.logBytes(accs[i].y.debug());
-            console2.logBytes(proofs[i].x.debug());
-            console2.logBytes(proofs[i].y.debug());
         }
         Bw6Fr memory sum_ry = rs.mul_sum(ys);
 
         Bw6G1 memory acc = (vk.g1.mul(sum_ry)).sub(accs.msm(rs));
         Bw6G1 memory proof = proofs.msm(rs);
-
-        console2.logBytes(acc.x.debug());
-        console2.logBytes(acc.y.debug());
-        console2.logBytes(proof.x.debug());
-        console2.logBytes(proof.y.debug());
 
         return AccumulatedOpening(acc, proof);
     }
