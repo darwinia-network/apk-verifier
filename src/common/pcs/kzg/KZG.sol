@@ -47,12 +47,12 @@ library KZG {
             ys[i] = opening.y;
 
 
-            console2.logBytes(rs[i].debug());
-            console2.logBytes(ys[i].debug());
+            console2.logBytes(accs[i].x.debug());
+            console2.logBytes(accs[i].y.debug());
+            console2.logBytes(proofs[i].x.debug());
+            console2.logBytes(proofs[i].y.debug());
         }
         Bw6Fr memory sum_ry = rs.mul_sum(ys);
-
-        console2.logBytes(sum_ry.debug());
 
         Bw6G1 memory acc = (vk.g1.mul(sum_ry)).sub(accs.msm(rs));
         Bw6G1 memory proof = proofs.msm(rs);

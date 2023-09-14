@@ -4,6 +4,8 @@ pragma solidity ^0.8.17;
 import "./Fp.sol";
 import "./Fr.sol";
 
+import {console2} from "forge-std/console2.sol";
+
 struct Bw6G1 {
     Bw6Fp x;
     Bw6Fp y;
@@ -35,6 +37,10 @@ library BW6G1Affine {
 
     function is_infinity(Bw6G1 memory p) internal pure returns (bool) {
         return is_zero(p);
+    }
+
+    function eq(Bw6G1 memory a, Bw6G1 memory b) internal pure returns (bool) {
+        return a.x.eq(b.x) && a.y.eq(b.y);
     }
 
     /// If `self.is_zero()`, returns `self` (`== Self::zero()`).

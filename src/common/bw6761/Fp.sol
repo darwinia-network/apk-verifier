@@ -79,7 +79,7 @@ library BW6FP {
         }
         unchecked {
             uint8 borrow = 0;
-            (borrow, z.c) = m.b.sbb(y.c, borrow);
+            (borrow, z.c) = m.c.sbb(y.c, borrow);
             (borrow, z.b) = m.b.sbb(y.b, borrow);
             (, z.a) = m.a.sbb(y.a, borrow);
         }

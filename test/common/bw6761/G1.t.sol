@@ -53,4 +53,17 @@ contract BW6G1AffineTest is SimpleInputTest {
         bytes memory e = hex'4fcd0bf38015f1691c81412d167e6ae60b54218a79ed8820002b32452c04a237d9d1e5c5377190c86359cabe1a8bf400';
         assertEq(e, s);
     }
+
+    function test_sub() public {
+        Bw6G1 memory a = Bw6G1({
+            x: Bw6Fp(0x3742166ce08926765ae502ee0f62518a68bc593b728dca491e081157393efb,0x2588e69e6ccf7feddd72325fc4c0218be833a65f456fffe3fb83610310920755,0x23dbb5da1b96812fa1758d77500d6956fbf01dec90484a5a247709de35a74081),
+            y: Bw6Fp(0x302d12a0447e52d5f18e563c122665d266ca64f664acfe66296b72a6f3fad3,0x8a2dcc2b8543b5e630a0b657baa625490d3a1d107afcfeed765bc6381f00e996,0xb55ceba4c9dda959bbc0c926892bf7e211201e279633a88ac01d3e66496247f1)
+        });
+        a.neg();
+        Bw6G1 memory e = Bw6G1({
+            x: Bw6Fp(0x3742166ce08926765ae502ee0f62518a68bc593b728dca491e081157393efb,0x2588e69e6ccf7feddd72325fc4c0218be833a65f456fffe3fb83610310920755,0x23dbb5da1b96812fa1758d77500d6956fbf01dec90484a5a247709de35a74081),
+            y: Bw6Fp(0xf2bb125b3f4fb7fb963ae9c8e8d8d8e6bf4e058b6c9989ec590a7cd993c36d,0xe64dda0d60413332d32e04a76b0dfdbb794fabdc97fcfea2fb810da454eb1597,0xe3442b1d8c89ff9e5a4c2f8861c4ac55d5712040d9cc57f8347fc199b69db89a)
+        });
+        assertTrue(e.eq(a));
+    }
 }
