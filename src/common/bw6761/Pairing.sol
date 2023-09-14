@@ -11,10 +11,10 @@ library BW6Pairing {
 
     function pairing(Bw6G1[] memory a, Bw6G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
-        uint256 k = a.length;
-        uint256 N = 12 * k;
+        uint256 K = a.length;
+        uint256 N = 12 * K;
         uint256[] memory input = new uint[](N);
-        for (uint256 i = 0; i < k; i++) {
+        for (uint256 i = 0; i < K; i++) {
             Bw6G1 memory g1 = a[i];
             Bw6G2 memory g2 = b[i];
             input[i * 12] = g1.x.a;
@@ -30,16 +30,16 @@ library BW6Pairing {
             input[i * 12 + 10] = g2.y.b;
             input[i * 12 + 11] = g2.y.c;
         }
-        bool output;
+        uint256[1] memory output;
 
         assembly ("memory-safe") {
-            if iszero(staticcall(gas(), BW6_PAIRING, input, mul(N, 32), output, 32)) {
+            if iszero(staticcall(gas(), BW6_PAIRING, add(input, 32), mul(N, 32), output, 32)) {
                 let pt := mload(0x40)
                 returndatacopy(pt, 0, returndatasize())
                 revert(pt, returndatasize())
             }
         }
 
-        return output;
+        return output[0] == 1;
     }
 }

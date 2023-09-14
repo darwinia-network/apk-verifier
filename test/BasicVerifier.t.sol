@@ -10,6 +10,7 @@ contract BasicVerifierTest is SimpleInputTest {
     using BW6FR for Bw6Fr;
 
     BasicVerifier verifier;
+
     function setUp() public {
         Bw6G1[2] memory pks_comm = [pks_comm_x, pks_comm_y];
         verifier = new BasicVerifier(pks_comm);

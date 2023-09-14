@@ -15,6 +15,7 @@ contract PublicInputTest is SimpleInputTest {
     }
 
     function public_input_compressed() internal pure returns (bytes memory) {
-        return hex'9ea33636de773b3fab28129e5611cd57aed9d413e84df03cb30a42b56714fffa5377efe2a13a61dc8acc39696812df000400000000000000dfffffbfeffbff7ffeffb5dffff7fffffffffffdfbfefffeeffbbfffff7bdf7f0100000000000000';
+        return
+        hex"9ea33636de773b3fab28129e5611cd57aed9d413e84df03cb30a42b56714fffa5377efe2a13a61dc8acc39696812df000400000000000000dfffffbfeffbff7ffeffb5dffff7fffffffffffdfbfefffeeffbbfffff7bdf7f0100000000000000";
     }
 }

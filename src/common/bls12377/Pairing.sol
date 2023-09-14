@@ -44,7 +44,7 @@ library BLS12Pairing {
             input[i * 12 + 10] = g2.y.c1.a;
             input[i * 12 + 11] = g2.y.c1.b;
         }
-        bool output;
+        uint256 output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), BLS12_PAIRING, input, mul(N, 32), output, 32)) {
@@ -54,6 +54,6 @@ library BLS12Pairing {
             }
         }
 
-        return output;
+        return output == 1;
     }
 }

@@ -17,13 +17,13 @@ contract BasicVerifierScript is Script {
     }
 }
 
-
 contract WrapperBasicVerifierTest {
     using SimpleTranscript for Transcript;
     using BW6FR for Bw6Fr;
 
     BasicVerifier verifier;
     SimpleInputTest s;
+
     function setUp(address simple) public {
         s = SimpleInputTest(simple);
         Bw6G1[2] memory pks_comm = s.build_pks_comm();

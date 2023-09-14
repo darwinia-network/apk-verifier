@@ -9,7 +9,6 @@ struct Transcript {
 }
 
 library SimpleTranscript {
-
     function simple_fiat_shamir_rng(Transcript memory self) internal pure returns (Transcript memory) {
         Transcript memory t = init(self.buffer);
         update(t, "verifier_secret");
