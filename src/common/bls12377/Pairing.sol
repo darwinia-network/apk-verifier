@@ -25,10 +25,10 @@ library BLS12Pairing {
 
     function pairing(Bls12G1[] memory a, Bls12G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
-        uint256 k = a.length;
-        uint256 N = 12 * k;
+        uint256 K = a.length;
+        uint256 N = 12 * K;
         uint256[] memory input = new uint[](N);
-        for (uint256 i = 0; i < k; i++) {
+        for (uint256 i = 0; i < K; i++) {
             Bls12G1 memory g1 = a[i];
             Bls12G2 memory g2 = b[i];
             input[i * 12] = g1.x.a;
@@ -44,16 +44,16 @@ library BLS12Pairing {
             input[i * 12 + 10] = g2.y.c1.a;
             input[i * 12 + 11] = g2.y.c1.b;
         }
-        uint256 output;
+        uint256[1] memory output;
 
         assembly ("memory-safe") {
-            if iszero(staticcall(gas(), BLS12_PAIRING, input, mul(N, 32), output, 32)) {
+            if iszero(staticcall(gas(), BLS12_PAIRING, add(input, 32), mul(N, 32), output, 32)) {
                 let pt := mload(0x40)
                 returndatacopy(pt, 0, returndatasize())
                 revert(pt, returndatasize())
             }
         }
 
-        return output == 1;
+        return output[0] == 1;
     }
 }

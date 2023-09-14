@@ -12,54 +12,32 @@ library BLS12G2Affine {
     // TODO: switch to better hash to curve when available
     function hash_to_curve(bytes memory message) internal pure returns (Bls12G2 memory) {
         bytes memory r1 =
-            hex"d2a6843b098fc7aa6c612cd28f3637d5472d6ae4e71a399b39b64e5e1888567a3ffd79c8a20e43a0c4c15f1496c0f78cd1da87ad3d26b7eea1a5bc4bfd8caf567018b0020c573ba583f5d93b8af2ac7bad9b44523e0329aecf5cb61e33d9ec809ff9962f2673349e3c0e5a7ebbd007f40ee96bb684bf07cd2290379d29a0ad7e5d20f166096ff491413f2eabf1b15b3693a792c1403ffff4180ac0af21294049c2d612566d392179aa00d5168d8940b495ef3e2af93ddbc3e6b459779042048108000000";
-        bytes memory r2 =
-            hex"41ef33f28c04949108c172383f6dbfcb90b0b728717db3d5b98b7feebefe87d7acd6a384abc2ad506096423f494e96618af9a38fcac56330fc6d59780565ed1f04f6dcafa949436c1c381e568c6bffb98d538fe1a9a71f6c604cb3f647ca8800d7e9678f368b5d6f06c650ecdc208c87da53ad33283a2aae82ff3c7ca8b4b678986e82eb71fcd0d474780adf6b7f3c8cd5d8af5a881496d3b66ac203f473b498ce48ea748ab4722af122b86e13eebc0abed1f465ccc9817e89204eab3523488008000000";
+            hex"a1f80482fcc0bebe31ecdac01f571644c85d2623a5db8878ea4609274a49cf77ff221e0cacde36b8230677ba75a2e74ebbed22434d7673c1a1235c15c3ca342195dc79f09fb2e88c60411849ebf821581eeda074f130576a80c99aa24f21170078dc755346c371efac85aec926ff78ddb70d261bbd867d647b54cf9f55a9221fee32a62bd06a23b30c1d6be94b4cf8506fcdb0056835d9569878001f69e828135d2003acf08d360b682293770c3d493e1f67ac590328e10752675b804c6db20008000000";
         Bls12G2 memory p1 = Bls12G2(
             Bls12Fp2(
+
                 Bls12Fp(
-                    0xa96d4ba3d794796c9a831ea32d1b68, 0x15430996b90cd0b62fead75c7f106e00a42abbda2636ca9fbdaad830bfe2e51f
+                    0xf71825c48d6d1c890f6a4f8703ce5a, 0x1ba5097cc2983e8cd21437a3dbc271d9ac20b9a0fa42ed983c8f771d4a4f9ba5
                 ),
                 Bls12Fp(
-                    0x167bad61cb755a96b0a77f321d6f085,
-                    0xbdf8e8678cd779a1292ae6b89df8ae925ae0d1647b836b8f62183b1563a4b11f
+                    0x1abf3982d02f4d9ad8b129666ea3b9d,
+                    0x7845a8f0b23be01f2bf071499a56b3952ea5ed8ef8993886526ca554a9393d81
                 )
             ),
             Bls12Fp2(
                 Bls12Fp(
-                    0xa8b3d49887e70982afe2f4d4268776, 0x3d2535f4452f7de5718d53730121a05bce7da42aa066a51a6d63dc48ffde5a70
+                    0x10105c981e730102823c96c118f5b93,
+                    0xdaec82a03158ab549a8acd187e1fdf7928a986f73db678626a647a145f17a932
                 ),
                 Bls12Fp(
-                    0x1accb0f2b5255a02433cfa9b6929aa6,
-                    0x2b3b40082287829acb14b4ff10bb19a0e9694bb78fc07123337d406c30d93b67
-                )
-            )
-        );
-        Bls12G2 memory p2 = Bls12G2(
-            Bls12Fp2(
-                Bls12Fp(
-                    0x15356e27a5b50286e5e088f4ff802a0,
-                    0xacc5a3b3aa5a9b7dfbed1c8f5d630fbf2ad548ef84710b5a4d5575cc8785fafc
-                ),
-                Bls12Fp(
-                    0x7c72365e30cfc747f9c513967ff01b, 0x83987b2037004232a27534e202cb8769457afb8925b5ab5ff8c1bbfffe742af6
-                )
-            ),
-            Bls12Fp2(
-                Bls12Fp(
-                    0x3ad6611555b271759a8c1df9a4418, 0xc17ae50e122a8855c406da795943237b13da5a31f742409f96b5bf2edd97c618
-                ),
-                Bls12Fp(
-                    0x1accb0f2b5255a02433cfa9b6929aa6,
-                    0x2b3b40082287829acb14b4ff10bb19a0e9694bb78fc07123337d406c30d93b67
+                    0xa0f3396068929d03cb77c7c0e92cd9,
+                    0xc0dfbcac8a6384eb0e482b3eca6865a3b968839750d49564310e0c9f57150d71
                 )
             )
         );
 
         if (hash(message) == hash(r1)) {
             return p1;
-        } else if (hash(message) == hash(r2)) {
-            return p2;
         } else {
             revert("!hash_to_curve");
         }

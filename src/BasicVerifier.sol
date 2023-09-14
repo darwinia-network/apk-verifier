@@ -55,7 +55,7 @@ contract BasicVerifier {
         SimpleProof calldata proof,
         Bls12G2 calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
-    ) external view {
+    ) external view returns (bool) {
         uint256 n_signers = public_input.bitmask.count_ones();
         // apk proof verification
         require(verify_simple(public_input, proof), "!apk");
@@ -64,6 +64,8 @@ contract BasicVerifier {
         require(verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment), "!bls");
         // check threhold
         require(n_signers >= QUORUM, "!quorum");
+
+        return true;
     }
 
     function verify_bls(
