@@ -21,11 +21,15 @@ library BLS12FP2 {
         return x.c0.eq(y.c0) && x.c1.eq(y.c1);
     }
 
-    function hash_to_field(bytes memory message) internal pure returns (Bls12Fp2[2] memory) {
+    function hash_to_field(bytes memory message) internal view returns (Bls12Fp2[2] memory) {
         bytes memory uniform_bytes = expand_message_xmd(message);
+        Bls12Fp2[2] memory output = abi.decode(uniform_bytes, (Bls12Fp2[2]));
+        output[0] = norm(output[0]);
+        output[1] = norm(output[1]);
+        return output;
     }
 
-    function expand_message_xmd(bytes memory message) internal view returns (bytes memory) {
+    function expand_message_xmd(bytes memory message) internal pure returns (bytes memory) {
         bytes memory msg_prime = abi.encodePacked(Z_PAD, message, hex"010000", DST_PRIME);
 
         bytes32 b0 = sha256(msg_prime);
@@ -47,5 +51,13 @@ library BLS12FP2 {
         }
 
         return output;
+    }
+
+    function norm(Bls12Fp2 memory fp2) internal view returns (Bls12Fp2 memory) {
+        return Bls12Fp2(fp2.c0.norm(), fp2.c1.norm());
+    }
+
+    function debug(Bls12Fp2 memory fp2) internal view returns (bytes memory) {
+        return abi.encodePacked(fp2.c0.debug(), fp2.c1.debug());
     }
 }

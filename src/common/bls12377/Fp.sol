@@ -13,6 +13,8 @@ struct Bls12Fp {
 library BLS12FP {
     using Math for uint256;
 
+    uint8 private constant MOD_EXP = 0x05;
+
     //! * Base field: q = 258664426012969094010652733694893533536393512754914660539884262666720468348340822774968888139573360124440321458177
     function q() internal pure returns (Bls12Fp memory) {
         return Bls12Fp(
@@ -75,5 +77,27 @@ library BLS12FP {
 
     function debug(Bls12Fp memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(self.a, self.b);
+    }
+
+    function norm(Bls12Fp memory fp) internal view returns (Bls12Fp memory) {
+         uint[8] memory input;
+        input[0] = 0x40;
+        input[1] = 0x20;
+        input[2] = 0x40;
+        input[3] = fp.a;
+        input[4] = fp.b;
+        input[5] = 1;
+        input[6] = q().a;
+        input[7] = q().b;
+        uint[2] memory output;
+
+        assembly ("memory-safe") {
+            if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
+                let p := mload(0x40)
+                returndatacopy(p, 0, returndatasize())
+                revert(p, returndatasize())
+            }
+        }
+        return Bls12Fp(output[0], output[1]);
     }
 }
