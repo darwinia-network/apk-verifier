@@ -80,7 +80,7 @@ library BLS12FP {
     }
 
     function norm(Bls12Fp memory fp) internal view returns (Bls12Fp memory) {
-         uint[8] memory input;
+        uint256[8] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
         input[2] = 0x40;
@@ -89,7 +89,7 @@ library BLS12FP {
         input[5] = 1;
         input[6] = q().a;
         input[7] = q().b;
-        uint[2] memory output;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {

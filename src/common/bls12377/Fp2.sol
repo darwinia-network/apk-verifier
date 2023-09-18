@@ -57,7 +57,7 @@ library BLS12FP2 {
         return Bls12Fp2(fp2.c0.norm(), fp2.c1.norm());
     }
 
-    function debug(Bls12Fp2 memory fp2) internal view returns (bytes memory) {
+    function debug(Bls12Fp2 memory fp2) internal pure returns (bytes memory) {
         return abi.encodePacked(fp2.c0.debug(), fp2.c1.debug());
     }
 }
