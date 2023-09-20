@@ -3,8 +3,6 @@ pragma solidity ^0.8.17;
 
 import "./Fp.sol";
 
-import "forge-std/console2.sol";
-
 struct Bls12Fp2 {
     Bls12Fp c0;
     Bls12Fp c1;

@@ -10,14 +10,14 @@ struct PartialSumsCommitments {
     Bw6G1[2] partial_sums;
 }
 
-struct PartialSumsAndBitmaskCommitments {
-    Bw6G1[2] partial_sums;
-    Bw6G1 bitmask;
-}
-
 struct AffineAdditionEvaluations {
     Bw6Fr[2] keyset;
     Bw6Fr bitmask;
+    Bw6Fr[2] partial_sums;
+}
+
+struct AffineAdditionEvaluationsWithoutBitmask {
+    Bw6Fr[2] keyset;
     Bw6Fr[2] partial_sums;
 }
 
@@ -26,6 +26,8 @@ library BasicProtocol {
     using BLS12FP for Bls12Fp;
     using BW6G1Affine for Bw6G1;
     using BLS12G1Affine for Bls12G1;
+
+    uint256 internal constant POLYS_OPENED_AT_ZETA = 5;
 
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
@@ -135,5 +137,15 @@ library BasicProtocol {
         Bw6Fr memory c1 = ((x1.sub(hx)).mul(evals_at_zeta.l_first)).add((x1.sub(px)).mul(evals_at_zeta.l_last));
         Bw6Fr memory c2 = ((y1.sub(hy)).mul(evals_at_zeta.l_first)).add((y1.sub(py)).mul(evals_at_zeta.l_last));
         return (c1, c2);
+    }
+
+    function serialize(AffineAdditionEvaluations memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(
+            self.keyset[0].serialize(),
+            self.keyset[1].serialize(),
+            self.bitmask.serialize(),
+            self.partial_sums[0].serialize(),
+            self.partial_sums[1].serialize()
+        );
     }
 }

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.17;
 
 import "./Fp.sol";
-import {console2} from "forge-std/console2.sol";
 
 struct Bw6G2 {
     Bw6Fp x;

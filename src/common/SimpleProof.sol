@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "./bw6761/G1.sol";
 import "./piop/AffineAddition.sol";
-import "./piop/Basic.sol";
 
 struct SimpleProof {
     // PartialSumsCommitments

@@ -4,8 +4,6 @@ pragma solidity ^0.8.17;
 import "./Fp.sol";
 import "./Fr.sol";
 
-import {console2} from "forge-std/console2.sol";
-
 struct Bw6G1 {
     Bw6Fp x;
     Bw6Fp y;

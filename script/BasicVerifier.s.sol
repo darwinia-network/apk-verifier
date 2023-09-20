@@ -3,7 +3,6 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
 import "../src/BasicVerifier.sol";
-import "../test/BasicVerifier.t.sol";
 import "../test/common/SimpleInput.t.sol";
 
 contract BasicVerifierScript is Script {

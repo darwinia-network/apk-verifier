@@ -13,6 +13,11 @@ struct BitmaskPackingCommitments {
     Bw6G1 acc_comm;
 }
 
+struct PartialSumsAndBitmaskCommitments {
+    Bw6G1[2] partial_sums;
+    Bw6G1 bitmask;
+}
+
 struct SuccinctAccountableRegisterEvaluations {
     Bw6Fr c;
     Bw6Fr acc;
@@ -24,6 +29,8 @@ library PackedProtocol {
     using BW6FR for Bw6Fr[];
     using BW6G1Affine for Bw6G1;
     using BasicProtocol for AffineAdditionEvaluations;
+
+    uint256 internal constant POLYS_OPENED_AT_ZETA = 8;
 
     function restore_commitment_to_linearization_polynomial(
         SuccinctAccountableRegisterEvaluations memory self,
@@ -120,5 +127,19 @@ library PackedProtocol {
     ) internal view returns (Bw6Fr memory) {
         Bw6Fr memory c_zeta_omega = BW6FR.zero();
         return c_zeta_omega.sub(c_zeta.mul(a)).sub((BW6FR.one().sub(r_pow_m)).mul(evals_at_zeta.l_last));
+    }
+
+    function serialize(PartialSumsAndBitmaskCommitments memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(
+            self.partial_sums[0].serialize(), self.partial_sums[1].serialize(), self.bitmask.serialize()
+        );
+    }
+
+    function serialize(BitmaskPackingCommitments memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(self.c_comm.serialize(), self.acc_comm.serialize());
+    }
+
+    function serialize(SuccinctAccountableRegisterEvaluations memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(self.c.serialize(), self.acc.serialize(), self.basic_evaluations.serialize());
     }
 }

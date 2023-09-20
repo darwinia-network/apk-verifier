@@ -14,8 +14,6 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
-import {console2} from "forge-std/console2.sol";
-
 contract BasicVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -32,13 +30,9 @@ contract BasicVerifier {
     using PublicInput for AccountablePublicInput;
     using BW6G1Affine for Bw6G1;
 
-    // debug
-    using BW6FP for Bw6Fp;
-
     KeysetCommitment public pks_comm;
 
     uint256 internal constant QUORUM = 171;
-    uint256 internal constant POLYS_OPENED_AT_ZETA = 5;
 
     constructor(Bw6G1[2] memory c0) {
         pks_comm.pks_comm[0] = c0[0];
@@ -84,7 +78,7 @@ contract BasicVerifier {
         returns (bool)
     {
         (Challenges memory challenges, Transcript memory fsrng) =
-            restore_challenges(public_input, proof, POLYS_OPENED_AT_ZETA);
+            restore_challenges(public_input, proof, BasicProtocol.POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
         Bw6Fr memory b_at_zeta = challenges.zeta.barycentric_eval_binary_at(public_input.bitmask, domain());
 
@@ -115,8 +109,6 @@ contract BasicVerifier {
             abi.encodePacked(proof.register_commitments[0].serialize(), proof.register_commitments[1].serialize())
         );
         Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
-        // Packed:
-        // transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
         transcript.append_2nd_round_register_commitments("");
         Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
         transcript.append_quotient_commitment(proof.q_comm.serialize());

@@ -6,8 +6,6 @@ import "../../bw6761/Fr.sol";
 import "../../bw6761/G1.sol";
 import "../../bw6761/Pairing.sol";
 
-import {console2} from "forge-std/console2.sol";
-
 /// e(acc, g2) = e(proof, tau.g2)
 struct AccumulatedOpening {
     Bw6G1 acc;
@@ -25,10 +23,6 @@ library KZG {
     using BW6FR for Bw6Fr[];
     using BW6G1Affine for Bw6G1;
     using BW6G1Affine for Bw6G1[];
-
-    // debug
-    using BW6FP for Bw6Fp;
-    using BW6FR for Bw6Fr;
 
     function accumulate(KzgOpening[] memory openings, Bw6Fr[] memory rs, RVK memory vk)
         internal
