@@ -14,7 +14,7 @@ library KZGParams {
     using BW6G1Affine for Bw6G1;
     using BW6G2Affine for Bw6G2;
 
-    function raw_vk() internal pure returns (RVK memory) {
+    function raw_vk() public pure returns (RVK memory) {
         return RVK({
             g1: Bw6G1({
                 x: Bw6Fp({

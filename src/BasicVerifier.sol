@@ -99,7 +99,7 @@ contract BasicVerifier {
         AccountablePublicInput calldata public_input,
         SimpleProof calldata proof,
         uint256 batch_size
-    ) public view returns (Challenges memory, Transcript memory) {
+    ) internal view returns (Challenges memory, Transcript memory) {
         Transcript memory transcript = SimpleTranscript.init("apk_proof");
         transcript.set_protocol_params(Radix2.init().serialize(), kzg_pvk().serialize());
         transcript.set_keyset_commitment(pks_comm.serialize());
@@ -180,7 +180,7 @@ contract BasicVerifier {
         require(acc_opening.verify_accumulated(kzg_pvk()), "!KZG verification");
     }
 
-    function kzg_pvk() public pure returns (RVK memory) {
+    function kzg_pvk() internal pure returns (RVK memory) {
         return KZGParams.raw_vk();
     }
 }

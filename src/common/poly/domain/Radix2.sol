@@ -31,7 +31,7 @@ library Radix2 {
 
     uint32 internal constant LOG_N = 8;
 
-    function init() internal pure returns (Radix2EvaluationDomain memory) {
+    function init() public pure returns (Radix2EvaluationDomain memory) {
         return Radix2EvaluationDomain({
             size: 256,
             log_size_of_group: LOG_N,

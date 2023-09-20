@@ -28,7 +28,7 @@ library BLS12G2Affine {
         return add(q0, q1);
     }
 
-    function add(Bls12G2 memory p, Bls12G2 memory q) internal view returns (Bls12G2 memory) {
+    function add(Bls12G2 memory p, Bls12G2 memory q) internal view returns (Bls12G2 memory output) {
         uint256[16] memory input;
         input[0] = p.x.c0.a;
         input[1] = p.x.c0.b;
@@ -46,7 +46,6 @@ library BLS12G2Affine {
         input[13] = q.y.c0.b;
         input[14] = q.y.c1.a;
         input[15] = q.y.c1.b;
-        uint256[8] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G2_ADD, input, 512, output, 256)) {
@@ -55,17 +54,14 @@ library BLS12G2Affine {
                 revert(pt, returndatasize())
             }
         }
-
-        return from(output);
     }
 
-    function map_to_curve(Bls12Fp2 memory fp2) internal view returns (Bls12G2 memory) {
+    function map_to_curve(Bls12Fp2 memory fp2) internal view returns (Bls12G2 memory output) {
         uint256[4] memory input;
         input[0] = fp2.c0.a;
         input[1] = fp2.c0.b;
         input[2] = fp2.c1.a;
         input[3] = fp2.c1.b;
-        uint256[8] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MAP_FP2_TO_G2, input, 128, output, 256)) {
@@ -74,14 +70,6 @@ library BLS12G2Affine {
                 revert(p, returndatasize())
             }
         }
-
-        return from(output);
-    }
-
-    function from(uint256[8] memory x) internal pure returns (Bls12G2 memory) {
-        return Bls12G2(
-            Bls12Fp2(Bls12Fp(x[0], x[1]), Bls12Fp(x[2], x[3])), Bls12Fp2(Bls12Fp(x[4], x[5]), Bls12Fp(x[6], x[7]))
-        );
     }
 
     function debug(Bls12G2 memory p) internal pure returns (bytes memory) {

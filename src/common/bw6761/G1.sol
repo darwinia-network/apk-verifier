@@ -47,7 +47,7 @@ library BW6G1Affine {
         self.y = self.y.neg();
     }
 
-    function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory) {
+    function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory output) {
         uint256[12] memory input;
         input[0] = p.x.a;
         input[1] = p.x.b;
@@ -61,7 +61,6 @@ library BW6G1Affine {
         input[9] = q.y.a;
         input[10] = q.y.b;
         input[11] = q.y.c;
-        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_ADD, input, 384, output, 192)) {
@@ -70,8 +69,6 @@ library BW6G1Affine {
                 revert(pt, returndatasize())
             }
         }
-
-        return from(output);
     }
 
     function sub(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory z) {
@@ -79,7 +76,7 @@ library BW6G1Affine {
         z = add(p, q);
     }
 
-    function mul(Bw6G1 memory p, Bw6Fr memory scalar) internal view returns (Bw6G1 memory) {
+    function mul(Bw6G1 memory p, Bw6Fr memory scalar) internal view returns (Bw6G1 memory output) {
         uint256[8] memory input;
         input[0] = p.x.a;
         input[1] = p.x.b;
@@ -89,7 +86,6 @@ library BW6G1Affine {
         input[5] = p.y.c;
         input[6] = scalar.a;
         input[7] = scalar.b;
-        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_MUL, input, 256, output, 192)) {
@@ -98,11 +94,9 @@ library BW6G1Affine {
                 revert(pt, returndatasize())
             }
         }
-
-        return from(output);
     }
 
-    function msm(Bw6G1[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1 memory) {
+    function msm(Bw6G1[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1 memory output) {
         require(bases.length == scalars.length, "!len");
         uint256 k = bases.length;
         uint256 N = 8 * k;
@@ -119,7 +113,6 @@ library BW6G1Affine {
             input[i * 8 + 6] = scalar.a;
             input[i * 8 + 7] = scalar.b;
         }
-        uint256[6] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_MULTIEXP, add(input, 32), mul(N, 32), output, 192)) {
@@ -128,8 +121,6 @@ library BW6G1Affine {
                 revert(pt, returndatasize())
             }
         }
-
-        return from(output);
     }
 
     function from(uint256[6] memory x) internal pure returns (Bw6G1 memory) {
