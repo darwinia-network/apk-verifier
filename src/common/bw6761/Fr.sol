@@ -172,7 +172,7 @@ library BW6FR {
         return mod_exp(base, exp, r());
     }
 
-    function mod_exp(Bw6Fr memory base, uint256 exp, Bw6Fr memory modulus) internal view returns (Bw6Fr memory output) {
+    function mod_exp(Bw6Fr memory base, uint256 exp, Bw6Fr memory modulus) internal view returns (Bw6Fr memory) {
         uint256[8] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
@@ -182,6 +182,7 @@ library BW6FR {
         input[5] = exp;
         input[6] = modulus.a;
         input[7] = modulus.b;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
@@ -190,9 +191,11 @@ library BW6FR {
                 revert(p, returndatasize())
             }
         }
+
+        return Bw6Fr(output[0], output[1]);
     }
 
-    function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory output) {
+    function square_nomod(Bw6Fr memory self) internal view returns (Bw6Fr[2] memory) {
         uint256[10] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
@@ -204,6 +207,7 @@ library BW6FR {
         input[7] = type(uint256).max;
         input[8] = type(uint256).max;
         input[9] = type(uint256).max;
+        uint256[4] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 320, output, 128)) {
@@ -212,9 +216,10 @@ library BW6FR {
                 revert(p, returndatasize())
             }
         }
+        return [Bw6Fr(output[0], output[1]), Bw6Fr(output[2], output[3])];
     }
 
-    function norm(Bw6Fr[2] memory self) internal view returns (Bw6Fr memory output) {
+    function norm(Bw6Fr[2] memory self) internal view returns (Bw6Fr memory) {
         uint256[10] memory input;
         input[0] = 0x80;
         input[1] = 0x20;
@@ -226,6 +231,7 @@ library BW6FR {
         input[7] = 1;
         input[8] = r().a;
         input[9] = r().b;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 320, output, 64)) {
@@ -234,6 +240,7 @@ library BW6FR {
                 revert(p, returndatasize())
             }
         }
+        return Bw6Fr(output[0], output[1]);
     }
 
     /// (max_exp+1)-sized vec: 1, base, base^2,... ,base^{max_exp}

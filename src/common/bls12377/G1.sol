@@ -50,7 +50,7 @@ library BLS12G1Affine {
         return Bls12G1({x: Bls12Fp(0, 0), y: Bls12Fp(0, 1)});
     }
 
-    function add(Bls12G1 memory p, Bls12G1 memory q) internal view returns (Bls12G1 memory output) {
+    function add(Bls12G1 memory p, Bls12G1 memory q) internal view returns (Bls12G1 memory) {
         uint256[8] memory input;
         input[0] = p.x.a;
         input[1] = p.x.b;
@@ -60,6 +60,7 @@ library BLS12G1Affine {
         input[5] = q.x.b;
         input[6] = q.y.a;
         input[7] = q.y.b;
+        uint256[4] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), G1_ADD, input, 256, output, 128)) {
@@ -68,6 +69,12 @@ library BLS12G1Affine {
                 revert(pt, returndatasize())
             }
         }
+
+        return from(output);
+    }
+
+    function from(uint256[4] memory x) internal pure returns (Bls12G1 memory) {
+        return Bls12G1(Bls12Fp(x[0], x[1]), Bls12Fp(x[2], x[3]));
     }
 
     function serialize(Bls12G1 memory g1) internal pure returns (bytes memory r) {

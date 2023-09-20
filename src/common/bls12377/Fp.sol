@@ -79,7 +79,7 @@ library BLS12FP {
         return abi.encodePacked(self.a, self.b);
     }
 
-    function norm(Bls12Fp memory fp) internal view returns (Bls12Fp memory output) {
+    function norm(Bls12Fp memory fp) internal view returns (Bls12Fp memory) {
         uint256[8] memory input;
         input[0] = 0x40;
         input[1] = 0x20;
@@ -89,6 +89,7 @@ library BLS12FP {
         input[5] = 1;
         input[6] = q().a;
         input[7] = q().b;
+        uint256[2] memory output;
 
         assembly ("memory-safe") {
             if iszero(staticcall(gas(), MOD_EXP, input, 256, output, 64)) {
@@ -97,5 +98,6 @@ library BLS12FP {
                 revert(p, returndatasize())
             }
         }
+        return Bls12Fp(output[0], output[1]);
     }
 }
