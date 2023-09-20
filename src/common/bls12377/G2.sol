@@ -25,8 +25,7 @@ library BLS12G2Affine {
         Bls12Fp2[2] memory u = message.hash_to_field();
         Bls12G2 memory q0 = map_to_curve(u[0]);
         Bls12G2 memory q1 = map_to_curve(u[1]);
-        Bls12G2 memory r = add(q0, q1);
-        return clear_cofactor(r);
+        return add(q0, q1);
     }
 
     function add(Bls12G2 memory p, Bls12G2 memory q) internal view returns (Bls12G2 memory) {
