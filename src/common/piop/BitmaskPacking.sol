@@ -8,8 +8,6 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
-import "forge-std/console2.sol";
-
 struct BitmaskPackingCommitments {
     Bw6G1 c_comm;
     Bw6G1 acc_comm;

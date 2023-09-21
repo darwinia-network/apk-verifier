@@ -34,14 +34,6 @@ contract PackedProtocolTest is PackedInputTest {
         Bw6Fr memory e7 =
             Bw6Fr(0x107a2d31e8cd62d82a070ccca410001, 0x476b94d2ae3bf1982b18e7357c49335ee5b4ed0dd16f272ce69067c86d07e6c6);
 
-        console.logBytes(evals[0].debug());
-        console.logBytes(evals[1].debug());
-        console.logBytes(evals[2].debug());
-        console.logBytes(evals[3].debug());
-        console.logBytes(evals[4].debug());
-        console.logBytes(evals[5].debug());
-        console.logBytes(evals[6].debug());
-
         assertEq(e1.debug(), evals[0].debug());
         assertEq(e2.debug(), evals[1].debug());
         assertEq(e3.debug(), evals[2].debug());

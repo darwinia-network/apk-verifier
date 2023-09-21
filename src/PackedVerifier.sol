@@ -13,8 +13,6 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
-import "forge-std/console2.sol";
-
 contract PackedVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -89,8 +87,6 @@ contract PackedVerifier {
             public_input.apk, evals_at_zeta, challenges.r, public_input.bitmask, domain().size
         );
         Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
-
-        console2.logBytes(w.debug());
 
         return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }

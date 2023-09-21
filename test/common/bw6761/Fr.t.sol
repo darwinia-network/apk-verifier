@@ -116,9 +116,11 @@ contract BW6FRTest is Test {
     function test_mix() public {
         Bw6Fr memory two = BW6FR.two();
         Bw6Fr memory r = Bw6Fr({a: 0, b: 133321539823602459806599945304366977715});
-        Bw6Fr memory a_zeta_omega1 = Bw6Fr(0x12c44f75be8135d89e72c7407273ed9, 0xce3698b9639bf3618953f61038f8cac68890d607172c9d5311b0543a2a3c362e);
+        Bw6Fr memory a_zeta_omega1 =
+            Bw6Fr(0x12c44f75be8135d89e72c7407273ed9, 0xce3698b9639bf3618953f61038f8cac68890d607172c9d5311b0543a2a3c362e);
         Bw6Fr memory a = two.add((r.mul(two.pow(255).inverse()).sub(two)).mul(a_zeta_omega1));
-        Bw6Fr memory e = Bw6Fr(0x11d37ccfaff155313af1e1a98bdfacd, 0xdde0eea8987b8379ca84ffbeaf9c9705c1683ecf9192872e2481e73e037516a3);
+        Bw6Fr memory e =
+            Bw6Fr(0x11d37ccfaff155313af1e1a98bdfacd, 0xdde0eea8987b8379ca84ffbeaf9c9705c1683ecf9192872e2481e73e037516a3);
         assertTrue(e.eq(a));
     }
 }
