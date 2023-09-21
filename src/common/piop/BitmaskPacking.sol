@@ -8,6 +8,8 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
+import "forge-std/console2.sol";
+
 struct BitmaskPackingCommitments {
     Bw6G1 c_comm;
     Bw6G1 acc_comm;
@@ -85,12 +87,13 @@ library PackedProtocol {
 
         require(a_zeta_omega1.eq(a_zeta_omega2), "!zeta_omega");
         Bw6Fr memory two = BW6FR.two();
-        Bw6Fr memory a = two.add(r.mul((two.pow(255).sub(two)).mul(a_zeta_omega1)));
+        Bw6Fr memory a = two.add((r.mul(two.pow(255).inverse()).sub(two)).mul(a_zeta_omega1));
         Bw6Fr memory b = self.basic_evaluations.bitmask;
         Bw6Fr memory acc = self.acc;
         Bw6Fr memory c = self.c;
 
         Bw6Fr memory a6 = evaluate_inner_product_constraint_linearized(aggregated_bitmask, evals_at_zeta, b, c, acc);
+
         Bw6Fr memory a7 = evaluate_multipacking_mask_constraint_linearized(a, r_pow_m, evals_at_zeta, c);
 
         Bw6Fr[] memory basic = self.basic_evaluations.evaluate_constraint_polynomials(apk, evals_at_zeta);

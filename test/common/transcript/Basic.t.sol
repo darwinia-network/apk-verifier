@@ -8,7 +8,7 @@ import "../../../src/common/pcs/kzg/KZG.sol";
 import "../../../src/common/poly/domain/Radix2.sol";
 import "../../../src/common/transcipt/Simple.sol";
 
-contract SimpleTranscriptTest is SimpleInputTest {
+contract BasicSimpleTranscriptTest is SimpleInputTest {
     using SimpleTranscript for Transcript;
     using Radix2 for Radix2EvaluationDomain;
     using KZGParams for RVK;
@@ -25,7 +25,7 @@ contract SimpleTranscriptTest is SimpleInputTest {
         pks_comm.log_domain_size = Radix2.LOG_N;
     }
 
-    function test_simple_transcript() public {
+    function test_basic_simple_transcript() public {
         AccountablePublicInput memory public_input = build_public_input();
         SimpleProof memory proof = build_proof();
         Challenges memory e = build_expect_challenges();
@@ -59,8 +59,9 @@ contract SimpleTranscriptTest is SimpleInputTest {
             proof.r_zeta_omega.serialize()
         );
 
-        Bw6Fr[] memory nus = t.get_kzg_aggregation_challenges(5);
-        for (uint256 i = 0; i < 5; i++) {
+        uint256 batch_size = BasicProtocol.POLYS_OPENED_AT_ZETA;
+        Bw6Fr[] memory nus = t.get_kzg_aggregation_challenges(batch_size);
+        for (uint256 i = 0; i < batch_size; i++) {
             assertTrue(nus[i].eq(e.nus[i]));
         }
 

@@ -13,6 +13,8 @@ import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
+import "forge-std/console2.sol";
+
 contract PackedVerifier {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -32,6 +34,8 @@ contract PackedVerifier {
     using BW6G1Affine for Bw6G1;
 
     KeysetCommitment public pks_comm;
+
+    using BW6G1Affine for Bw6G1;
 
     uint256 internal constant QUORUM = 171;
 
@@ -85,6 +89,9 @@ contract PackedVerifier {
             public_input.apk, evals_at_zeta, challenges.r, public_input.bitmask, domain().size
         );
         Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
+
+        console2.logBytes(w.debug());
+
         return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
@@ -100,6 +107,7 @@ contract PackedVerifier {
         transcript.append_public_input(public_input.serialize());
         transcript.append_register_commitments(proof.register_commitments.serialize());
         Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
+
         transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
         Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
         transcript.append_quotient_commitment(proof.q_comm.serialize());

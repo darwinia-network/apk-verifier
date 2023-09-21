@@ -96,4 +96,29 @@ contract BW6FRTest is Test {
             hex"944b8b2943b33794346652f12a143a43d5972c2edc0874f4d14e3ab475e51507c47afaa7db5474a1df4c3a5a75e19901";
         assertEq(a.serialize(), e);
     }
+
+    function test_inverse() public {
+        Bw6Fr memory a = Bw6Fr(0, 256);
+        a.inverse();
+        Bw6Fr memory e =
+            Bw6Fr(0x1ac8c0bd1ad4bd9db74cabaac34a7f1, 0xdf08b7190df41e7b8fd46ecd8a4f3eb816f451e6ebd000008483b74000000001);
+        assertTrue(e.eq(a));
+    }
+
+    function test_powers() public {
+        Bw6Fr memory r = Bw6Fr({a: 0, b: 133321539823602459806599945304366977715});
+        Bw6Fr[] memory powers_of_r = r.powers(0);
+        Bw6Fr memory e = Bw6Fr(0, 1);
+        assertEq(powers_of_r.length, 1);
+        assertTrue(e.eq(powers_of_r[0]));
+    }
+
+    function test_mix() public {
+        Bw6Fr memory two = BW6FR.two();
+        Bw6Fr memory r = Bw6Fr({a: 0, b: 133321539823602459806599945304366977715});
+        Bw6Fr memory a_zeta_omega1 = Bw6Fr(0x12c44f75be8135d89e72c7407273ed9, 0xce3698b9639bf3618953f61038f8cac68890d607172c9d5311b0543a2a3c362e);
+        Bw6Fr memory a = two.add((r.mul(two.pow(255).inverse()).sub(two)).mul(a_zeta_omega1));
+        Bw6Fr memory e = Bw6Fr(0x11d37ccfaff155313af1e1a98bdfacd, 0xdde0eea8987b8379ca84ffbeaf9c9705c1683ecf9192872e2481e73e037516a3);
+        assertTrue(e.eq(a));
+    }
 }

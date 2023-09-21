@@ -149,4 +149,8 @@ library BW6G1Affine {
             }
         }
     }
+
+    function debug(Bw6G1 memory self) internal pure returns (bytes memory) {
+        return abi.encodePacked(self.x.debug(), self.y.debug());
+    }
 }
