@@ -2,18 +2,20 @@
 pragma solidity ^0.8.17;
 
 import "./common/KeySet.sol";
-import "./common/PackedProof.sol";
+import "./common/SimpleProof.sol";
 import "./common/PublicInput.sol";
 import "./common/bls12377/G2.sol";
 import "./common/bls12377/Pairing.sol";
 import "./common/bw6761/Fr.sol";
+import "./common/bw6761/G1.sol";
 import "./common/pcs/kzg/KZG.sol";
 import "./common/pcs/aggregation/Single.sol";
 import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
-contract PackedVerifier {
+/// @title Basic
+contract Basic {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
     using Lagrange for Bw6Fr;
@@ -22,9 +24,7 @@ contract PackedVerifier {
     using KZG for KzgOpening[];
     using KZG for AccumulatedOpening;
     using KeySet for KeysetCommitment;
-    using PackedProtocol for SuccinctAccountableRegisterEvaluations;
-    using PackedProtocol for PartialSumsAndBitmaskCommitments;
-    using PackedProtocol for BitmaskPackingCommitments;
+    using BasicProtocol for AffineAdditionEvaluations;
     using SimpleTranscript for Transcript;
     using Radix2 for Radix2EvaluationDomain;
     using KZGParams for RVK;
@@ -32,8 +32,6 @@ contract PackedVerifier {
     using BW6G1Affine for Bw6G1;
 
     KeysetCommitment public pks_comm;
-
-    using BW6G1Affine for Bw6G1;
 
     uint256 internal constant QUORUM = 171;
 
@@ -49,13 +47,14 @@ contract PackedVerifier {
 
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
-        PackedProof calldata proof,
+        SimpleProof calldata proof,
         Bls12G2 calldata aggregate_signature,
         KeysetCommitment calldata new_validator_set_commitment
     ) external view returns (bool) {
         uint256 n_signers = public_input.bitmask.count_ones();
         // apk proof verification
-        require(verify_packed(public_input, proof), "!apk");
+        require(verify_simple(public_input, proof), "!apk");
+
         // aggregate BLS signature verification
         require(verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment), "!bls");
         // check threhold
@@ -74,26 +73,32 @@ contract PackedVerifier {
         return BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message);
     }
 
-    function verify_packed(AccountablePublicInput calldata public_input, PackedProof calldata proof)
+    function verify_simple(AccountablePublicInput calldata public_input, SimpleProof calldata proof)
         internal
         view
         returns (bool)
     {
         (Challenges memory challenges, Transcript memory fsrng) =
-            restore_challenges(public_input, proof, PackedProtocol.POLYS_OPENED_AT_ZETA);
+            restore_challenges(public_input, proof, BasicProtocol.POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
-        validate_evaluations(proof, challenges, fsrng, evals_at_zeta);
-        Bw6Fr[] memory constraint_polynomial_evals = proof.register_evaluations.evaluate_constraint_polynomials(
-            public_input.apk, evals_at_zeta, challenges.r, public_input.bitmask, domain().size
-        );
-        Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
+        Bw6Fr memory b_at_zeta = challenges.zeta.barycentric_eval_binary_at(public_input.bitmask, domain());
 
+        AffineAdditionEvaluations memory evaluations_with_bitmask = AffineAdditionEvaluations({
+            keyset: proof.register_evaluations.keyset,
+            bitmask: b_at_zeta,
+            partial_sums: proof.register_evaluations.partial_sums
+        });
+
+        validate_evaluations(proof, evaluations_with_bitmask, challenges, fsrng, evals_at_zeta);
+        Bw6Fr[] memory constraint_polynomial_evals =
+            evaluations_with_bitmask.evaluate_constraint_polynomials(public_input.apk, evals_at_zeta);
+        Bw6Fr memory w = constraint_polynomial_evals.horner_field(challenges.phi);
         return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
     function restore_challenges(
         AccountablePublicInput calldata public_input,
-        PackedProof calldata proof,
+        SimpleProof calldata proof,
         uint256 batch_size
     ) internal view returns (Challenges memory, Transcript memory) {
         Transcript memory transcript = SimpleTranscript.init("apk_proof");
@@ -101,15 +106,23 @@ contract PackedVerifier {
         transcript.set_keyset_commitment(pks_comm.serialize());
 
         transcript.append_public_input(public_input.serialize());
-        transcript.append_register_commitments(proof.register_commitments.serialize());
+        transcript.append_register_commitments(
+            abi.encodePacked(proof.register_commitments[0].serialize(), proof.register_commitments[1].serialize())
+        );
         Bw6Fr memory r = transcript.get_bitmask_aggregation_challenge();
-
-        transcript.append_2nd_round_register_commitments(proof.additional_commitments.serialize());
+        transcript.append_2nd_round_register_commitments("");
         Bw6Fr memory phi = transcript.get_constraints_aggregation_challenge();
         transcript.append_quotient_commitment(proof.q_comm.serialize());
         Bw6Fr memory zeta = transcript.get_evaluation_point();
         transcript.append_evaluations(
-            proof.register_evaluations.serialize(), proof.q_zeta.serialize(), proof.r_zeta_omega.serialize()
+            abi.encodePacked(
+                proof.register_evaluations.keyset[0].serialize(),
+                proof.register_evaluations.keyset[1].serialize(),
+                proof.register_evaluations.partial_sums[0].serialize(),
+                proof.register_evaluations.partial_sums[1].serialize()
+            ),
+            proof.q_zeta.serialize(),
+            proof.r_zeta_omega.serialize()
         );
         Bw6Fr[] memory nus = transcript.get_kzg_aggregation_challenges(batch_size);
 
@@ -117,38 +130,34 @@ contract PackedVerifier {
     }
 
     function validate_evaluations(
-        PackedProof calldata proof,
+        SimpleProof memory proof,
+        AffineAdditionEvaluations memory protocol,
         Challenges memory challenges,
         Transcript memory fsrng,
         LagrangeEvaluations memory evals_at_zeta
     ) internal view {
+        // KZG check
         // Reconstruct the commitment to the linearization polynomial using the commitments to the registers from the proof.
         // linearization polynomial commitment
-        Bw6G1 memory r_comm = proof.register_evaluations.restore_commitment_to_linearization_polynomial(
-            challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments, proof.additional_commitments
+        Bw6G1 memory r_comm = protocol.restore_commitment_to_linearization_polynomial(
+            challenges.phi, evals_at_zeta.zeta_minus_omega_inv, proof.register_commitments
         );
 
         // Aggregate the commitments to be opened in \zeta, using the challenge \nu.
         // aggregate evaluation claims in zeta
-        Bw6G1[] memory commitments = new Bw6G1[](8);
+        Bw6G1[] memory commitments = new Bw6G1[](5);
         commitments[0] = pks_comm.pks_comm[0];
         commitments[1] = pks_comm.pks_comm[1];
-        commitments[2] = proof.register_commitments.bitmask;
-        commitments[3] = proof.register_commitments.partial_sums[0];
-        commitments[4] = proof.register_commitments.partial_sums[1];
-        commitments[5] = proof.additional_commitments.c_comm;
-        commitments[6] = proof.additional_commitments.acc_comm;
-        commitments[7] = proof.q_comm;
+        commitments[2] = proof.register_commitments[0];
+        commitments[3] = proof.register_commitments[1];
+        commitments[4] = proof.q_comm;
         // ...together with the corresponding values
-        Bw6Fr[] memory register_evals = new Bw6Fr[](8);
-        register_evals[0] = proof.register_evaluations.basic_evaluations.keyset[0];
-        register_evals[1] = proof.register_evaluations.basic_evaluations.keyset[1];
-        register_evals[2] = proof.register_evaluations.basic_evaluations.bitmask;
-        register_evals[3] = proof.register_evaluations.basic_evaluations.partial_sums[0];
-        register_evals[4] = proof.register_evaluations.basic_evaluations.partial_sums[1];
-        register_evals[5] = proof.register_evaluations.c;
-        register_evals[6] = proof.register_evaluations.acc;
-        register_evals[7] = proof.q_zeta;
+        Bw6Fr[] memory register_evals = new Bw6Fr[](5);
+        register_evals[0] = proof.register_evaluations.keyset[0];
+        register_evals[1] = proof.register_evaluations.keyset[1];
+        register_evals[2] = proof.register_evaluations.partial_sums[0];
+        register_evals[3] = proof.register_evaluations.partial_sums[1];
+        register_evals[4] = proof.q_zeta;
         (Bw6G1 memory w_comm, Bw6Fr memory w_at_zeta) =
             commitments.aggregate_claims_multiexp(register_evals, challenges.nus);
 

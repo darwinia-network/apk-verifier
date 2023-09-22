@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../src/PackedVerifier.sol";
+import "../src/Packed.sol";
 import "../src/common/bw6761/G1.sol";
 import "./common/PackedInput.t.sol";
 
-contract PackedVerifierTest is PackedInputTest {
-    PackedVerifier verifier;
+contract PackedTest is PackedInputTest {
+    Packed verifier;
 
     function setUp() public {
         Bw6G1[2] memory pks_comm = [pks_comm_x, pks_comm_y];
-        verifier = new PackedVerifier(pks_comm);
+        verifier = new Packed(pks_comm);
     }
 
     function test_verify_aggregates() public {

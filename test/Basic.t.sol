@@ -1,19 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "../src/BasicVerifier.sol";
+import "../src/Basic.sol";
 import "../src/common/bw6761/G1.sol";
 import "./common/SimpleInput.t.sol";
 
-contract BasicVerifierTest is SimpleInputTest {
+contract BasicTest is SimpleInputTest {
     using SimpleTranscript for Transcript;
     using BW6FR for Bw6Fr;
 
-    BasicVerifier verifier;
+    Basic verifier;
 
     function setUp() public {
         Bw6G1[2] memory pks_comm = [pks_comm_x, pks_comm_y];
-        verifier = new BasicVerifier(pks_comm);
+        verifier = new Basic(pks_comm);
     }
 
     function test_verify_aggregates() public {
