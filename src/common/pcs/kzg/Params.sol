@@ -4,16 +4,23 @@ pragma solidity ^0.8.17;
 import "../../bw6761/G1.sol";
 import "../../bw6761/G2.sol";
 
+/// @dev KZG raw verifier key.
+/// @param g1 Generator of G1.
+/// @param g2 Generator of G2
+/// @param tau_in_g2 tau.g2
 struct RVK {
     Bw6G1 g1;
     Bw6G2 g2;
     Bw6G2 tau_in_g2;
 }
 
+/// @title KZGParams
 library KZGParams {
     using BW6G1Affine for Bw6G1;
     using BW6G2Affine for Bw6G2;
 
+    /// @dev KZG verifier key.
+    /// @return KZG raw verifier key.
     function raw_vk() public pure returns (RVK memory) {
         return RVK({
             g1: Bw6G1({

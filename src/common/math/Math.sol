@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
+/// @title Math
 library Math {
+    /// @dev Add with carry
+    /// (carry, d) = a + b + carry.
     function adc(uint256 a, uint256 b, uint8 carry) internal pure returns (uint8, uint256) {
         unchecked {
             uint256 c = a + b;
@@ -11,6 +14,8 @@ library Math {
         }
     }
 
+    /// @dev Sub with borrow
+    /// (borrow, d) = a - b - borrow.
     function sbb(uint256 a, uint256 b, uint8 borrow) internal pure returns (uint8, uint256) {
         unchecked {
             uint256 c = a - uint256(borrow);

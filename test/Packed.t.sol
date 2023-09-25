@@ -19,6 +19,6 @@ contract PackedTest is PackedInputTest {
         Bls12G2 memory aggregate_signature = build_aggregate_signature();
         KeysetCommitment memory new_validator_set_commitment = build_new_validator_set_commitment();
 
-        verifier.verify_aggregates(public_input, proof, aggregate_signature, new_validator_set_commitment);
+        assertTrue(verifier.verify_aggregates(public_input, proof, aggregate_signature, new_validator_set_commitment));
     }
 }

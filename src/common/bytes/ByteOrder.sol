@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-// Sources:
+/// @title ByteOrder
+/// @custom:inspired Sources:
 //   * https://ethereum.stackexchange.com/questions/15350/how-to-convert-an-bytes-to-address-in-solidity/50528
 //   * https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
 library ByteOrder {
+
+    /// @dev Reverse uint256
     function reverse256(uint256 input) internal pure returns (uint256 v) {
         v = input;
 
@@ -28,6 +31,7 @@ library ByteOrder {
         v = (v >> 128) | (v << 128);
     }
 
+    /// @dev Reverse uint128
     function reverse128(uint128 input) internal pure returns (uint128 v) {
         v = input;
 
@@ -44,6 +48,7 @@ library ByteOrder {
         v = (v >> 64) | (v << 64);
     }
 
+    /// @dev Reverse uint64
     function reverse64(uint64 input) internal pure returns (uint64 v) {
         v = input;
 
@@ -57,6 +62,7 @@ library ByteOrder {
         v = (v >> 32) | (v << 32);
     }
 
+    /// @dev Reverse uint32
     function reverse32(uint32 input) internal pure returns (uint32 v) {
         v = input;
 
@@ -67,6 +73,7 @@ library ByteOrder {
         v = (v >> 16) | (v << 16);
     }
 
+    /// @dev Reverse uint16
     function reverse16(uint16 input) internal pure returns (uint16 v) {
         v = input;
 

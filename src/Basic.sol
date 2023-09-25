@@ -15,6 +15,26 @@ import "./common/poly/evaluations/Lagrange.sol";
 import "./common/transcipt/Simple.sol";
 
 /// @title Basic
+/// @dev Light client's state is initialized with a commitment 'C0' to the ('genesis') validator set of the era #0
+/// (and some technical stuff, like public parameters).
+///
+/// When an era (tautologically, a validator set) changes, a helper provides:
+/// 1. the commitment 'C1' to the new validator set,
+/// 2. an aggregate signature 'asig0' of a subset of validators of the previous era on the new commitment 'C1',
+/// 3. an aggregate public key 'apk0' of this subset of validators,
+/// 4. a bitmask 'b0' identifying this subset in the whole set of the validators of the previous era, and
+/// 5. a proof 'p0', that attests that the key 'apk0' is indeed the aggregate public key of a subset identified by 'b0'
+///                  of the set of the validators, identified by the commitment 'C0', of the previous era.
+/// All together this is ('C1', 'asig0', 'apk0', 'b0', 'p0').
+///
+/// The light client:
+/// 1. makes sure that the key 'apk0' is correct by verifying the proof 'p0':
+///    apk_verify('apk0', 'b0', 'C0'; 'p0') == true
+/// 2. verifies the aggregate signature 'asig0' agains the key 'apk0':
+///    bls_verify('asig0', 'apk0', 'C1') == true
+/// 3. If both checks passed and the bitmask contains enough (say, >2/3 of) signers,
+///    updates its state to the new commitment 'C1'.
+/// @notice APK verifier based 'basic' scheme.
 contract Basic {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -31,20 +51,35 @@ contract Basic {
     using PublicInput for AccountablePublicInput;
     using BW6G1Affine for Bw6G1;
 
+    /// @dev Genesis validator set of the era #0.
     KeysetCommitment public pks_comm;
 
+    /// @dev The majority amount of signers.
     uint256 internal constant QUORUM = 171;
 
+    /// @dev Init.
+    /// @param c0 The commitment 'C0' the genesis validator set.
     constructor(Bw6G1[2] memory c0) {
         pks_comm.pks_comm[0] = c0[0];
         pks_comm.pks_comm[1] = c0[1];
         pks_comm.log_domain_size = Radix2.LOG_N;
     }
 
+    /// @dev Domain used to interpolate pks.
+    /// @notice Only for fields that have a large multiplicative subgroup
+    ///         of size that is a power-of-2.
     function domain() internal pure returns (Radix2EvaluationDomain memory) {
         return Radix2.init();
     }
 
+    /// @dev Core function aggregate all verify.
+    ///      1. apk_verify.
+    ///      2. bls_verify.
+    ///      3. threhold check.
+    /// @param public_input Accountable public input.
+    /// @param proof Simple proof of basic scheme.
+    /// @param new_validator_set_commitment The commitment is to the upcoming validator set.
+    /// @return Result of the verify.
     function verify_aggregates(
         AccountablePublicInput calldata public_input,
         SimpleProof calldata proof,
@@ -57,12 +92,18 @@ contract Basic {
 
         // aggregate BLS signature verification
         require(verify_bls(public_input.apk, aggregate_signature, new_validator_set_commitment), "!bls");
+
         // check threhold
         require(n_signers >= QUORUM, "!quorum");
 
         return true;
     }
 
+    /// @dev Verify BLS aggregate signature.
+    /// @param aggregate_public_key Aggregate public key.
+    /// @param aggregate_signature Aggregate signature.
+    /// @param new_validator_set_commitment The commitment is to the upcoming validator set.
+    /// @return Result of the verify.
     function verify_bls(
         Bls12G1 memory aggregate_public_key,
         Bls12G2 memory aggregate_signature,
@@ -73,6 +114,10 @@ contract Basic {
         return BLS12Pairing.verify(aggregate_public_key, aggregate_signature, message);
     }
 
+    /// @dev APK verify for basic scheme.
+    /// @param public_input Accountable public input.
+    /// @param proof Simple proof of basic scheme.
+    /// @return Result of the verify.
     function verify_simple(AccountablePublicInput calldata public_input, SimpleProof calldata proof)
         internal
         view
@@ -81,6 +126,8 @@ contract Basic {
         (Challenges memory challenges, Transcript memory fsrng) =
             restore_challenges(public_input, proof, BasicProtocol.POLYS_OPENED_AT_ZETA);
         LagrangeEvaluations memory evals_at_zeta = challenges.zeta.lagrange_evaluations(domain());
+
+        // linear accountability check
         Bw6Fr memory b_at_zeta = challenges.zeta.barycentric_eval_binary_at(public_input.bitmask, domain());
 
         AffineAdditionEvaluations memory evaluations_with_bitmask = AffineAdditionEvaluations({
@@ -96,6 +143,10 @@ contract Basic {
         return (proof.r_zeta_omega.add(w)).eq(proof.q_zeta.mul(evals_at_zeta.vanishing_polynomial));
     }
 
+    /// @dev Restore challenges.
+    /// @param public_input Accountable public input.
+    /// @param proof Simple proof of basic scheme.
+    /// @return Tuple of challenges and transcipt.
     function restore_challenges(
         AccountablePublicInput calldata public_input,
         SimpleProof calldata proof,
@@ -129,6 +180,12 @@ contract Basic {
         return (Challenges({r: r, phi: phi, zeta: zeta, nus: nus}), SimpleTranscript.simple_fiat_shamir_rng(transcript));
     }
 
+    /// @dev Validate evaluations.
+    /// @param proof Simple proof of basic scheme.
+    /// @param protocol Protocol of batch scheme.
+    /// @param challenges Restored challenges.
+    /// @param fsrng Fiat shamir rng.
+    /// @param evals_at_zeta Lagrange evaluations at zeta.
     function validate_evaluations(
         SimpleProof memory proof,
         AffineAdditionEvaluations memory protocol,
@@ -181,6 +238,8 @@ contract Basic {
         require(acc_opening.verify_accumulated(kzg_pvk()), "!KZG verification");
     }
 
+    /// @dev KZG verifier key.
+    /// @return KZG raw verifier key.
     function kzg_pvk() internal pure returns (RVK memory) {
         return KZGParams.raw_vk();
     }

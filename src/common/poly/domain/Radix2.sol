@@ -4,33 +4,38 @@ pragma solidity ^0.8.17;
 import "../../bw6761/Fr.sol";
 import "../../bytes/ByteOrder.sol";
 
+/// @dev Defines a domain over which finite field (I)FFTs can be performed. Works
+/// only for fields that have a large multiplicative subgroup of size that is
+/// a power-of-2.
+/// @param size The size of the domain.
+/// @param log_size_of_group `log_2(self.size)`.
+/// @param size_as_field_element Size of the domain as a field element.
+/// @param size_inv Inverse of the size in the field.
+/// @param group_gen A generator of the subgroup.
+/// @param group_gen_inv Inverse of the generator of the subgroup.
+/// @param offset Offset that specifies the coset.
+/// @param offset_inv Inverse of the offset that specifies the coset.
+/// @param offset_pow_size Constant coefficient for the vanishing polynomial, Equals `self.offset^self.size`.
 struct Radix2EvaluationDomain {
-    /// The size of the domain.
     uint64 size;
-    /// `log_2(self.size)`.
     uint32 log_size_of_group;
-    /// Size of the domain as a field element.
     Bw6Fr size_as_field_element;
-    /// Inverse of the size in the field.
     Bw6Fr size_inv;
-    /// A generator of the subgroup.
     Bw6Fr group_gen;
-    /// Inverse of the generator of the subgroup.
     Bw6Fr group_gen_inv;
-    /// Offset that specifies the coset.
     Bw6Fr offset;
-    /// Inverse of the offset that specifies the coset.
     Bw6Fr offset_inv;
-    /// Constant coefficient for the vanishing polynomial.
-    /// Equals `self.offset^self.size`.
     Bw6Fr offset_pow_size;
 }
 
+/// @title Radix2
 library Radix2 {
     using BW6FR for Bw6Fr;
 
+    /// @dev log_n
     uint32 internal constant LOG_N = 8;
 
+    /// @dev Domain used to interpolate pks.
     function init() public pure returns (Radix2EvaluationDomain memory) {
         return Radix2EvaluationDomain({
             size: 256,
@@ -51,6 +56,9 @@ library Radix2 {
         });
     }
 
+    /// @dev Serialize Radix2EvaluationDomain.
+    /// @param self Radix2EvaluationDomain.
+    /// @return Compressed serialized bytes of Radix2EvaluationDomain.
     function serialize(Radix2EvaluationDomain memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(
             ByteOrder.reverse64(self.size),

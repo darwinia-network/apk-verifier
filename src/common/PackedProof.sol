@@ -5,6 +5,7 @@ import "./bw6761/G1.sol";
 import "./piop/AffineAddition.sol";
 import "./piop/BitmaskPacking.sol";
 
+/// @dev PackedProof
 struct PackedProof {
     PartialSumsAndBitmaskCommitments register_commitments;
     // 2nd round commitments, used in "packed" scheme after get the bitmask aggregation challenge is received

@@ -4,11 +4,16 @@ pragma solidity ^0.8.17;
 import "./G1.sol";
 import "./G2.sol";
 
+/// @title BW6Pairing
 library BW6Pairing {
-    // BW6_PAIRING
+    /// @dev BW6_PAIRING precompile address.
     // uint256 private constant BW6_PAIRING = 0x24;
     uint256 private constant BW6_PAIRING = 0x0810;
 
+    /// @dev Computes a "product" of pairings.
+    /// @param a List of Bw6G1.
+    /// @param b List of Bw6G2.
+    /// @return True if pairing output is 1.
     function pairing(Bw6G1[] memory a, Bw6G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
         uint256 K = a.length;

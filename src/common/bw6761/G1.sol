@@ -4,49 +4,71 @@ pragma solidity ^0.8.17;
 import "./Fp.sol";
 import "./Fr.sol";
 
+/// @dev BW6-761 G1 of affine coordinates in short Weierstrass.
+/// @param x X over the base field.
+/// @param y Y over the base field.
 struct Bw6G1 {
     Bw6Fp x;
     Bw6Fp y;
 }
 
+/// @title BW6G1Affine
 library BW6G1Affine {
     using BW6FP for Bw6Fp;
 
-    // BW6_G1_ADD
+    /// @dev BW6_G1_ADD precompile address.
     // uint256 private constant G1_ADD = 0x1e;
     uint256 private constant G1_ADD = 0x080a;
-    // BW6_G1_MUL
+    /// @dev BW6_G1_MUL precompile address.
     // uint256 private constant G1_MUL = 0x1f;
     uint256 private constant G1_MUL = 0x080b;
-    // BW6_G1_MULTIEXP
+    /// @dev BW6_G1_MULTIEXP precompile address.
     // uint256 private constant G1_MULTIEXP = 0x20;
     uint256 private constant G1_MULTIEXP = 0x080c;
 
+    /// @dev INFINITY_FLAG
     bytes1 private constant INFINITY_FLAG = bytes1(0x40);
+    /// @dev Y_IS_NEGATIVE
     bytes1 private constant Y_IS_NEGATIVE = bytes1(0x80);
 
+    /// @dev Returns the additive identity element of Bw6G1.
+    /// @return Bw6G1(BW6FP.zero(), BW6FP.zero())
     function zero() internal pure returns (Bw6G1 memory) {
         return Bw6G1(BW6FP.zero(), BW6FP.zero());
     }
 
-    function is_zero(Bw6G1 memory p) internal pure returns (bool) {
-        return p.x.is_zero() && p.y.is_zero();
+    /// @dev Returns `true` if `self` is equal to the additive identity.
+    /// @param self Bw6G1.
+    /// @return Result of zero check.
+    function is_zero(Bw6G1 memory self) internal pure returns (bool) {
+        return self.x.is_zero() && self.y.is_zero();
     }
 
-    function is_infinity(Bw6G1 memory p) internal pure returns (bool) {
-        return is_zero(p);
+    /// @dev Returns `true` if `self` is infinity point.
+    /// @param self Bw6G1.
+    /// @return Result of infinity check.
+    function is_infinity(Bw6G1 memory self) internal pure returns (bool) {
+        return is_zero(self);
     }
 
+    /// @dev Returns `true` if `a` is equal to `a`.
+    /// @param a Bw6G1.
+    /// @param b Bw6G1.
+    /// @return Result of equal check.
     function eq(Bw6G1 memory a, Bw6G1 memory b) internal pure returns (bool) {
         return a.x.eq(b.x) && a.y.eq(b.y);
     }
 
-    /// If `self.is_zero()`, returns `self` (`== Self::zero()`).
+    /// @dev If `self.is_zero()`, returns `self` (`== Self::zero()`).
     /// Else, returns `(x, -y)`, where `self = (x, y)`.
+    /// @param self Bw6Fr.
     function neg(Bw6G1 memory self) internal pure {
         self.y = self.y.neg();
     }
 
+    /// @dev Returns the result of `p + q`.
+    /// @param p Bw6G1.
+    /// @param q Bw6G1.
     function add(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory) {
         uint256[12] memory input;
         input[0] = p.x.a;
@@ -74,11 +96,19 @@ library BW6G1Affine {
         return from(output);
     }
 
+    /// @dev Returns the result of `p - q`.
+    /// @param p Bw6G1.
+    /// @param q Bw6G1.
+    /// @return z `p - q`.
     function sub(Bw6G1 memory p, Bw6G1 memory q) internal view returns (Bw6G1 memory z) {
         neg(q);
         z = add(p, q);
     }
 
+    /// @dev Returns the result of `p * scalar`.
+    /// @param p Bw6G1.
+    /// @param scalar Bw6Fr.
+    /// @return z `p * scalar`.
     function mul(Bw6G1 memory p, Bw6Fr memory scalar) internal view returns (Bw6G1 memory) {
         uint256[8] memory input;
         input[0] = p.x.a;
@@ -102,6 +132,10 @@ library BW6G1Affine {
         return from(output);
     }
 
+    /// @dev Multi-scalar multiplication
+    /// @param bases Bw6G1[].
+    /// @param scalars Bw6Fr[].
+    /// @return Result of msm.
     function msm(Bw6G1[] memory bases, Bw6Fr[] memory scalars) internal view returns (Bw6G1 memory) {
         require(bases.length == scalars.length, "!len");
         uint256 k = bases.length;
@@ -132,10 +166,16 @@ library BW6G1Affine {
         return from(output);
     }
 
+    /// @dev Derive Bw6G1 from uint256[6].
+    /// @param x uint256[6].
+    /// @return Bw6G1.
     function from(uint256[6] memory x) internal pure returns (Bw6G1 memory) {
         return Bw6G1(Bw6Fp(x[0], x[1], x[2]), Bw6Fp(x[3], x[4], x[5]));
     }
 
+    /// @dev Serialize Bw6G1.
+    /// @param g1 Bw6G1.
+    /// @return r Compressed serialized bytes of Bw6G1.
     function serialize(Bw6G1 memory g1) internal pure returns (bytes memory r) {
         if (is_infinity(g1)) {
             r = new bytes(96);
@@ -150,6 +190,9 @@ library BW6G1Affine {
         }
     }
 
+    /// @dev Debug Bw6G1 in bytes.
+    /// @param self Bw6G1.
+    /// @return Uncompressed serialized bytes of Bw6G1.
     function debug(Bw6G1 memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(self.x.debug(), self.y.debug());
     }

@@ -4,11 +4,13 @@ pragma solidity ^0.8.17;
 import "../../bw6761/Fr.sol";
 import "../../bw6761/G1.sol";
 
+/// @title Single
 library Single {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
     using BW6G1Affine for Bw6G1[];
 
+    /// @dev Aggregate claims multiexp
     function aggregate_claims_multiexp(Bw6G1[] memory cs, Bw6Fr[] memory ys, Bw6Fr[] memory rs)
         internal
         view

@@ -6,12 +6,13 @@ import "../../bw6761/Fr.sol";
 import "../../bw6761/G1.sol";
 import "../../bw6761/Pairing.sol";
 
-/// e(acc, g2) = e(proof, tau.g2)
+/// @dev e(acc, g2) = e(proof, tau.g2)
 struct AccumulatedOpening {
     Bw6G1 acc;
     Bw6G1 proof;
 }
 
+/// @dev KZG Opening
 struct KzgOpening {
     Bw6G1 c;
     Bw6Fr x;
@@ -19,11 +20,13 @@ struct KzgOpening {
     Bw6G1 proof;
 }
 
+/// @title KZG
 library KZG {
     using BW6FR for Bw6Fr[];
     using BW6G1Affine for Bw6G1;
     using BW6G1Affine for Bw6G1[];
 
+    /// @dev KZG accumulate
     function accumulate(KzgOpening[] memory openings, Bw6Fr[] memory rs, RVK memory vk)
         internal
         view
@@ -48,6 +51,7 @@ library KZG {
         return AccumulatedOpening(acc, proof);
     }
 
+    /// @dev KZG verification
     function verify_accumulated(AccumulatedOpening memory opening, RVK memory vk) internal view returns (bool) {
         Bw6G1[] memory a = new Bw6G1[](2);
         a[0] = opening.acc;

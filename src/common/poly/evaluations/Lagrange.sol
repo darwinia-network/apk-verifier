@@ -5,20 +5,27 @@ import "../domain/Radix2.sol";
 import "../../bw6761/Fr.sol";
 import "../../Bitmask.sol";
 
-/// Values of the polynomials at a point z
+/// @dev Values of the polynomials at a point z
+/// @param vanishing_polynomial z^n - 1
+/// @param l_first L_0(z)
+/// @param l_last L_{n-1}(z)
+/// @param zeta_minus_omega_inv z - \omega^{-1}
+/// @param zeta_omega z * ω
 struct LagrangeEvaluations {
-    Bw6Fr vanishing_polynomial; // z^n - 1
-    Bw6Fr l_first; // L_0(z)
-    Bw6Fr l_last; // L_{n-1}(z)
-    Bw6Fr zeta_minus_omega_inv; // z - \omega^{-1}
-    Bw6Fr zeta_omega; // z * \omega
+    Bw6Fr vanishing_polynomial;
+    Bw6Fr l_first;
+    Bw6Fr l_last;
+    Bw6Fr zeta_minus_omega_inv;
+    Bw6Fr zeta_omega;
 }
 
+/// @title Lagrange
 library Lagrange {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
     using BitMask for Bitmask;
 
+    /// @dev Lagrange evaluations.
     function lagrange_evaluations(Bw6Fr memory z, Radix2EvaluationDomain memory dm)
         internal
         view

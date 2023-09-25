@@ -4,6 +4,7 @@ pragma solidity ^0.8.17;
 import "./bw6761/G1.sol";
 import "./piop/AffineAddition.sol";
 
+/// @dev SimpleProof
 struct SimpleProof {
     // PartialSumsCommitments
     Bw6G1[2] register_commitments;

@@ -4,11 +4,18 @@ pragma solidity ^0.8.17;
 import "./G1.sol";
 import "./G2.sol";
 
+/// @title BLS12Pairing
 library BLS12Pairing {
-    // BLS12_377_PAIRING
+    /// @dev BLS12_377_PAIRING precompile address.
     // uint256 private constant BLS12_PAIRING = 0x1b;
     uint256 private constant BLS12_PAIRING = 0x0807;
 
+    /// @dev Checks that a signature is valid for the octet string message under the public key PK
+    /// See <https://tools.ietf.org/html/draft-irtf-cfrg-bls-signature-04#section-2.8>
+    /// @param public_key Public key in BLS12-377 G1.
+    /// @param signature Signature in BLS12-377 G2.
+    /// @param message An octet string.
+    /// @return Result, either VALID or INVALID.
     function verify(Bls12G1 memory public_key, Bls12G2 memory signature, Bls12G2 memory message)
         internal
         view
@@ -23,6 +30,10 @@ library BLS12Pairing {
         return pairing(a, b);
     }
 
+    /// @dev Computes a "product" of pairings.
+    /// @param a List of Bls12G1.
+    /// @param b List of Bls12G2.
+    /// @return True if pairing output is 1.
     function pairing(Bls12G1[] memory a, Bls12G2[] memory b) internal view returns (bool) {
         require(a.length == b.length, "!len");
         uint256 K = a.length;

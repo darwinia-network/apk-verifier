@@ -4,11 +4,14 @@ pragma solidity ^0.8.17;
 import "../bw6761/Fr.sol";
 import "../bytes/ByteOrder.sol";
 
+/// @dev Transcript
 struct Transcript {
     bytes buffer;
 }
 
+/// @title SimpleTranscript
 library SimpleTranscript {
+    /// @dev Simple fiat shamir rng
     function simple_fiat_shamir_rng(Transcript memory self) internal pure returns (Transcript memory) {
         Transcript memory t = init(self.buffer);
         update(t, "verifier_secret");

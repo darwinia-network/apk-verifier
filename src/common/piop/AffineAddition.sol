@@ -6,21 +6,25 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
+/// @dev Partial sums commitments
 struct PartialSumsCommitments {
     Bw6G1[2] partial_sums;
 }
 
+/// @dev Affine addition evaluations
 struct AffineAdditionEvaluations {
     Bw6Fr[2] keyset;
     Bw6Fr bitmask;
     Bw6Fr[2] partial_sums;
 }
 
+/// @dev Affine addition evaluations without bitmask
 struct AffineAdditionEvaluationsWithoutBitmask {
     Bw6Fr[2] keyset;
     Bw6Fr[2] partial_sums;
 }
 
+/// @title BasicProtocol
 library BasicProtocol {
     using BW6FR for Bw6Fr;
     using BLS12FP for Bls12Fp;
@@ -29,6 +33,7 @@ library BasicProtocol {
 
     uint256 internal constant POLYS_OPENED_AT_ZETA = 5;
 
+    /// @dev Restore commitment to linearization polynomial.
     function restore_commitment_to_linearization_polynomial(
         AffineAdditionEvaluations memory self,
         Bw6Fr memory phi,
@@ -66,6 +71,7 @@ library BasicProtocol {
         return r_comm;
     }
 
+    /// @dev Evaluate constraint polynomials.
     function evaluate_constraint_polynomials(
         AffineAdditionEvaluations memory self,
         Bls12G1 memory apk,
@@ -91,6 +97,7 @@ library BasicProtocol {
         return res;
     }
 
+    /// @dev Evaluate conditional affine addition constraints linearized.
     function evaluate_conditional_affine_addition_constraints_linearized(
         Bw6Fr memory zeta_minus_omega_inv,
         Bw6Fr memory b,
@@ -113,6 +120,7 @@ library BasicProtocol {
         return (c1.mul(zeta_minus_omega_inv), c2.mul(zeta_minus_omega_inv));
     }
 
+    /// @dev Evaluate bitmask booleanity constraint.
     function evaluate_bitmask_booleanity_constraint(Bw6Fr memory bitmask_at_zeta)
         internal
         view
@@ -121,6 +129,7 @@ library BasicProtocol {
         return bitmask_at_zeta.mul(BW6FR.one().sub(bitmask_at_zeta));
     }
 
+    /// @dev Evaluate public inputs constraints.
     function evaluate_public_inputs_constraints(
         Bls12G1 memory apk,
         LagrangeEvaluations memory evals_at_zeta,
@@ -139,6 +148,9 @@ library BasicProtocol {
         return (c1, c2);
     }
 
+    /// @dev Serialize AffineAdditionEvaluations.
+    /// @param self AffineAdditionEvaluations.
+    /// @return Compressed serialized bytes of AffineAdditionEvaluations.
     function serialize(AffineAdditionEvaluations memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(
             self.keyset[0].serialize(),

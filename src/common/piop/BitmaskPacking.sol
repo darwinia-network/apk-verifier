@@ -8,22 +8,26 @@ import "../bw6761/Fr.sol";
 import "../bls12377/G1.sol";
 import "../poly/evaluations/Lagrange.sol";
 
+/// @dev Bitmask packing commitments
 struct BitmaskPackingCommitments {
     Bw6G1 c_comm;
     Bw6G1 acc_comm;
 }
 
+/// @dev Partial sums and bitmask commitments
 struct PartialSumsAndBitmaskCommitments {
     Bw6G1[2] partial_sums;
     Bw6G1 bitmask;
 }
 
+/// @dev Succinct accountable register evaluations
 struct SuccinctAccountableRegisterEvaluations {
     Bw6Fr c;
     Bw6Fr acc;
     AffineAdditionEvaluations basic_evaluations;
 }
 
+/// @title PackedProtocol
 library PackedProtocol {
     using BW6FR for Bw6Fr;
     using BW6FR for Bw6Fr[];
@@ -32,6 +36,7 @@ library PackedProtocol {
 
     uint256 internal constant POLYS_OPENED_AT_ZETA = 8;
 
+    /// @dev Restore commitment to linearization polynomial.
     function restore_commitment_to_linearization_polynomial(
         SuccinctAccountableRegisterEvaluations memory self,
         Bw6Fr memory phi,
@@ -48,6 +53,7 @@ library PackedProtocol {
         return r_comm;
     }
 
+    /// @dev Evaluate constraint polynomials.
     function evaluate_constraint_polynomials(
         SuccinctAccountableRegisterEvaluations memory self,
         Bls12G1 memory apk,
@@ -107,6 +113,7 @@ library PackedProtocol {
         return res;
     }
 
+    /// @dev Evaluate inner product constraint linearized.
     function evaluate_inner_product_constraint_linearized(
         Bw6Fr memory bitmask_chunks_aggregated,
         LagrangeEvaluations memory evals_at_zeta,
@@ -120,6 +127,7 @@ library PackedProtocol {
         );
     }
 
+    /// @dev Evaluate multipacking mask constraint linearized.
     function evaluate_multipacking_mask_constraint_linearized(
         Bw6Fr memory a,
         Bw6Fr memory r_pow_m,
@@ -130,16 +138,25 @@ library PackedProtocol {
         return c_zeta_omega.sub(c_zeta.mul(a)).sub((BW6FR.one().sub(r_pow_m)).mul(evals_at_zeta.l_last));
     }
 
+    /// @dev Serialize PartialSumsAndBitmaskCommitments.
+    /// @param self PartialSumsAndBitmaskCommitments.
+    /// @return Compressed serialized bytes of PartialSumsAndBitmaskCommitments.
     function serialize(PartialSumsAndBitmaskCommitments memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(
             self.partial_sums[0].serialize(), self.partial_sums[1].serialize(), self.bitmask.serialize()
         );
     }
 
+    /// @dev Serialize BitmaskPackingCommitments.
+    /// @param self BitmaskPackingCommitments.
+    /// @return Compressed serialized bytes of BitmaskPackingCommitments.
     function serialize(BitmaskPackingCommitments memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(self.c_comm.serialize(), self.acc_comm.serialize());
     }
 
+    /// @dev Serialize SuccinctAccountableRegisterEvaluations.
+    /// @param self SuccinctAccountableRegisterEvaluations.
+    /// @return Compressed serialized bytes of SuccinctAccountableRegisterEvaluations.
     function serialize(SuccinctAccountableRegisterEvaluations memory self) internal pure returns (bytes memory) {
         return abi.encodePacked(self.c.serialize(), self.acc.serialize(), self.basic_evaluations.serialize());
     }

@@ -1,20 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import "./Bits.sol";
+import "./bytes/Bits.sol";
 import "./bytes/ByteOrder.sol";
 
+
+/// @dev Bitmask bitvector of signers.
+/// @notice The highest limb of bitmask is left padded with 0s.
+/// @param limbs Internal representation for bitmask.
+/// @param padding_size The size of left padded 0s.
 struct Bitmask {
     uint256[] limbs;
     uint64 padding_size;
 }
 
-// Inspired: https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/Bitfield.sol
+/// @title Bitmask
+/// @custom:inspired From https://github.com/Snowfork/snowbridge/blob/main/core/packages/contracts/contracts/utils/Bitfield.sol
 library BitMask {
     using Bits for uint256;
 
     /// @dev Constants used to efficiently calculate the hamming weight of a bitfield. See
     /// https://en.wikipedia.org/wiki/Hamming_weight#Efficient_implementation for an explanation of those constants.
+
     uint256 internal constant M1 = 0x5555555555555555555555555555555555555555555555555555555555555555;
     uint256 internal constant M2 = 0x3333333333333333333333333333333333333333333333333333333333333333;
     uint256 internal constant M4 = 0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f;
@@ -28,9 +35,11 @@ library BitMask {
 
     uint256 internal constant NNNN = 4;
 
-    /// @notice Calculates the number of set bits by using the hamming weight of the bitfield.
+    /// @dev Calculates the number of set bits by using the hamming weight of the bitfield.
     /// The algorithm below is implemented after https://en.wikipedia.org/wiki/Hamming_weight#Efficient_implementation.
     /// Further improvements are possible, see the article above.
+    /// @param self Bitmask.
+    /// @return Ones count of bitmask.
     function count_ones(Bitmask memory self) internal pure returns (uint256) {
         unchecked {
             uint256 count = 0;
@@ -57,10 +66,17 @@ library BitMask {
         return x;
     }
 
+    /// @dev Actual size of bitmask, not including the padding.
+    /// @param self Bitmask.
+    /// @return Size of bitmask.
     function size(Bitmask memory self) internal pure returns (uint256) {
         return BITS_IN_LIMB * self.limbs.length - self.padding_size;
     }
 
+    /// @dev Bit at index of bitmask.
+    /// @param self Bitmask.
+    /// @param index The index of bitmask.
+    /// @return Bit at index of bitmask.
     function at(Bitmask memory self, uint256 index) internal pure returns (bool) {
         uint256 part = index >> 8;
         uint8 b = uint8(index & 0xFF);
