@@ -4,7 +4,6 @@ pragma solidity ^0.8.17;
 import "./bytes/Bits.sol";
 import "./bytes/ByteOrder.sol";
 
-
 /// @dev Bitmask bitvector of signers.
 /// @notice The highest limb of bitmask is left padded with 0s.
 /// @param limbs Internal representation for bitmask.

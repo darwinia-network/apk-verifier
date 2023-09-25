@@ -6,7 +6,6 @@ pragma solidity ^0.8.17;
 //   * https://ethereum.stackexchange.com/questions/15350/how-to-convert-an-bytes-to-address-in-solidity/50528
 //   * https://graphics.stanford.edu/~seander/bithacks.html#ReverseParallel
 library ByteOrder {
-
     /// @dev Reverse uint256
     function reverse256(uint256 input) internal pure returns (uint256 v) {
         v = input;
