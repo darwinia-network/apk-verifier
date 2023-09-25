@@ -2,5 +2,13 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+via_ir = true
+evm_version = "shanghai"
+sender = "0xf24ff3a9cf04c71dbc94d0b566f7a27b94566cac"
 
-# See more config options https://github.com/foundry-rs/foundry/tree/master/config
+[doc]
+out = "docs"
+title = "APK verifier"
+book = "book.toml"
+homepage = "README.md"
+ignore = []
