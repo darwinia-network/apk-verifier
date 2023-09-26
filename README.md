@@ -1,5 +1,5 @@
 # APK verifier
-Solidity verifier implementation for accountable light client. This project is [funded by the web3 foundation](https://github.com/w3f/Grants-Program/blob/master/applications/solidity-verifier-for-accountable-light-client.md).
+Solidity verifier implementation for [accountable light client](https://github.com/w3f/apk-proofs). This project is [funded by the web3 foundation](https://github.com/w3f/Grants-Program/blob/master/applications/solidity-verifier-for-accountable-light-client.md).
 <img src="assets/w3f_grant_badge.png"  style="max-width: 100%; height: auto;">
 
 ## Overview
@@ -33,31 +33,30 @@ make
 See inline code docs in the [book](https://darwinia-network.github.io/apk-verifier/)
 
 ## Testing and Testing Guide
-### Dependencies
-1. [Rust](https://www.rust-lang.org/tools/install)
+1. Install [Rust](https://www.rust-lang.org/tools/install).
 ```sh
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
-2. [Foundry](https://github.com/foundry-rs/foundry)
+2. Install [Foundry](https://github.com/foundry-rs/foundry).
 ```sh
 curl -L https://foundry.paradigm.xyz | bash
 ```
-3. [Darwinia Node](https://github.com/darwinia-network/darwinia/tree/apk-verifier)
+3. Build [Darwinia Node](https://github.com/darwinia-network/darwinia/tree/apk-verifier).
 ```sh
 git clone https://github.com/darwinia-network/darwinia.git --branch apk-verifier
 cargo build --release -p darwinia --features pangolin-native
 ```
-4. Run darwinia node
+4. Run darwinia node.
 ```sh
 ./target/release/darwinia --chain pangolin-dev --alice --tmp --rpc-external --rpc-cors all --execution=native
 ```
-5. Deploy basic/packed contract to local darwinia node
+5. Deploy basic/packed contract to local darwinia node.
 ```sh
-deploy-basic
-deploy-packed
+make deploy-basic
+make deploy-packed
 ```
 6. Contract deployed at last transaction hash.
-7. Run test
+7. Run test script.
 ```sh
 make test-basic  ADDR=0x3ed62137c5DB927cb137c26455969116BF0c23Cb
 make test-packed ADDR=0xeAB4eEBa1FF8504c124D031F6844AD98d07C318f
