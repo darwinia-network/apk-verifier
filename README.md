@@ -1,6 +1,6 @@
 # APK verifier
 Solidity verifier implementation for accountable light client. This project is [funded by the web3 foundation](https://github.com/w3f/Grants-Program/blob/master/applications/solidity-verifier-for-accountable-light-client.md).
-<img src="assets/web3 foundation_grants_badge_white.png"  style="max-width: 100%; height: auto;">
+<img src="assets/w3f_grant_badge.png"  style="max-width: 100%; height: auto;">
 
 ## Overview
 This repo holds two scheme apk verifier and associated libs:
