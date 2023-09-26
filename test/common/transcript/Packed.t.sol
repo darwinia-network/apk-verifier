@@ -6,7 +6,7 @@ import "../PackedInput.t.sol";
 import "../../../src/common/KeySet.sol";
 import "../../../src/common/pcs/kzg/KZG.sol";
 import "../../../src/common/poly/domain/Radix2.sol";
-import "../../../src/common/transcipt/Simple.sol";
+import "../../../src/common/transcript/Simple.sol";
 
 contract PackedSimpleTranscriptTest is PackedInputTest {
     using SimpleTranscript for Transcript;

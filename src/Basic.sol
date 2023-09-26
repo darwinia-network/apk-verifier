@@ -12,7 +12,7 @@ import "./common/pcs/kzg/KZG.sol";
 import "./common/pcs/aggregation/Single.sol";
 import "./common/poly/domain/Radix2.sol";
 import "./common/poly/evaluations/Lagrange.sol";
-import "./common/transcipt/Simple.sol";
+import "./common/transcript/Simple.sol";
 
 /// @title Basic
 /// @dev Light client's state is initialized with a commitment 'C0' to the ('genesis') validator set of the era #0
