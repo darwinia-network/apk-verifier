@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+env:
+  DOCKER_REGISTRY: ghcr.io
+
+jobs:
+  publish-docker-image:
+    name: Publish docker image
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Docker login
+        uses: docker/login-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ${{ env.DOCKER_REGISTRY }}
+
+      - name: Tag
+        uses: olegtarasov/get-tag@v2.1
+      - name: Sha
+        uses: benjlevesque/short-sha@v1.2
+
+      - name: Publish docker image
+        uses: docker/build-push-action@v3
+        with:
+          push: true
+          context: .
+          file: Dockerfile
+          tags: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}:sha-${{ env.SHA }}
+
+      - name: Publish docker image with tag
+        uses: docker/build-push-action@v3
+        if: startsWith(github.ref, 'refs/tags/v')
+        with:
+          push: true
+          context: .
+          file: Dockerfile
+          tags: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}:${{ env.GIT_TAG_NAME }}
