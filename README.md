@@ -71,7 +71,7 @@ make test-packed ADDR=0xeAB4eEBa1FF8504c124D031F6844AD98d07C318f
 ### 1. Run darwinia dev node
 
 ```
-local% docker run -it --name my_container ghcr.io/darwinia-network/apk-verifier:v0.1.0 "./bin/darwinia --chain pangolin-dev --alice --tmp --rpc-external --rpc-cors all --execution=native"
+local% docker run -it --name my_container ghcr.io/darwinia-network/apk-verifier:v0.1.1 "./bin/darwinia --chain pangolin-dev --alice --tmp --rpc-external --rpc-cors all --execution=native"
 ```
 
 ### 2. Deploy test contracts
