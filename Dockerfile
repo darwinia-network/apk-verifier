@@ -11,6 +11,9 @@ RUN . /root/.bashrc && foundryup
 
 # darwinia node
 RUN git clone https://github.com/darwinia-network/darwinia.git --branch apk-verifier --depth 1
-RUN cd darwinia && cargo build --release -p darwinia --features pangolin-native
+RUN cd darwinia && \
+    cargo build --release -p darwinia --features pangolin-native && \
+    cp ./target/release/darwinia ./bin/ && \
+    cd .. && rm -rf darwinia
 
 ENTRYPOINT ["/bin/bash", "-c"]

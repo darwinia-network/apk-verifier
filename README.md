@@ -70,21 +70,21 @@ make test-packed ADDR=0xeAB4eEBa1FF8504c124D031F6844AD98d07C318f
 
 ### 1. Run darwinia dev node
 
-```bash
-local% docker run -it --name my_container ghcr.io/darwinia-network/apk-verifier:v0.1.0 ./darwinia/target/release/darwinia --chain pangolin-dev --alice --tmp --rpc-external --rpc-cors all --execution=native
+```
+local% docker run -it --name my_container ghcr.io/darwinia-network/apk-verifier:v0.1.0 "./bin/darwinia --chain pangolin-dev --alice --tmp --rpc-external --rpc-cors all --execution=native"
 ```
 
 ### 2. Deploy test contracts
 
 Enter the running `my_container`:
 
-```bash
+```
 local% docker exec -it my_container bash
 ```
 
 In `my_container`:
 
-```bash
+```
 root@097f7b4f10da:/usr/src/app# make deploy-basic
 root@097f7b4f10da:/usr/src/app# make deploy-packed
 ```
@@ -93,14 +93,14 @@ root@097f7b4f10da:/usr/src/app# make deploy-packed
 
 In `my_container`:
 
-```bash
+```
 root@097f7b4f10da:/usr/src/app# make test-basic  ADDR=0x3ed62137c5DB927cb137c26455969116BF0c23Cb
 root@097f7b4f10da:/usr/src/app# make test-packed ADDR=0xeAB4eEBa1FF8504c124D031F6844AD98d07C318f
 ```
 
 Seeing the following results indicates that the test was successful:
 
-```bash
+```
 0x0000000000000000000000000000000000000000000000000000000000000001
 ```
 
