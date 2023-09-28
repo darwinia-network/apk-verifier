@@ -105,3 +105,5 @@ Seeing the following results indicates that the test was successful:
 ```
 
 ## License
+
+Apache License v2.0
