@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>AffineAdditionEvaluations - APK verifier</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        <link rel="icon" href="../../../../favicon.svg">
+        <link rel="shortcut icon" href="../../../../favicon.png">
+        <link rel="stylesheet" href="../../../../css/variables.css">
+        <link rel="stylesheet" href="../../../../css/general.css">
+        <link rel="stylesheet" href="../../../../css/chrome.css">
+        <link rel="stylesheet" href="../../../../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../../../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../../../../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../../../highlight.css">
+        <link rel="stylesheet" href="../../../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../../../../book.css">
+
+    </head>
+    <body>
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../../../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var html = document.querySelector('html');
+            var sidebar = null;
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item "><a href="../../../../index.html">Home</a></li><li class="chapter-item affix "><li class="part-title">src</li><li class="chapter-item expanded "><a href="../../../../src/common/index.html">❱ common</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/bls12377/index.html">❱ bls12377</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/bls12377/Fp.sol/struct.Bls12Fp.html">Bls12Fp</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/Fp.sol/library.BLS12FP.html">BLS12FP</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/Fp2.sol/struct.Bls12Fp2.html">Bls12Fp2</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/Fp2.sol/library.BLS12FP2.html">BLS12FP2</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/G1.sol/struct.Bls12G1.html">Bls12G1</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/G1.sol/library.BLS12G1Affine.html">BLS12G1Affine</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/G2.sol/struct.Bls12G2.html">Bls12G2</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/G2.sol/library.BLS12G2Affine.html">BLS12G2Affine</a></li><li class="chapter-item "><a href="../../../../src/common/bls12377/Pairing.sol/library.BLS12Pairing.html">BLS12Pairing</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/bw6761/index.html">❱ bw6761</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/bw6761/Fp.sol/struct.Bw6Fp.html">Bw6Fp</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/Fp.sol/library.BW6FP.html">BW6FP</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/Fr.sol/struct.Bw6Fr.html">Bw6Fr</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/Fr.sol/library.BW6FR.html">BW6FR</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/G1.sol/struct.Bw6G1.html">Bw6G1</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/G1.sol/library.BW6G1Affine.html">BW6G1Affine</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/G2.sol/struct.Bw6G2.html">Bw6G2</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/G2.sol/library.BW6G2Affine.html">BW6G2Affine</a></li><li class="chapter-item "><a href="../../../../src/common/bw6761/Pairing.sol/library.BW6Pairing.html">BW6Pairing</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/bytes/index.html">❱ bytes</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/bytes/Bits.sol/library.Bits.html">Bits</a></li><li class="chapter-item "><a href="../../../../src/common/bytes/ByteOrder.sol/library.ByteOrder.html">ByteOrder</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/math/index.html">❱ math</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/math/Math.sol/library.Math.html">Math</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/pcs/index.html">❱ pcs</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/pcs/aggregation/index.html">❱ aggregation</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/pcs/aggregation/Single.sol/library.Single.html">Single</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/index.html">❱ kzg</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/KZG.sol/struct.AccumulatedOpening.html">AccumulatedOpening</a></li><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/KZG.sol/struct.KzgOpening.html">KzgOpening</a></li><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/KZG.sol/library.KZG.html">KZG</a></li><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/Params.sol/struct.RVK.html">RVK</a></li><li class="chapter-item "><a href="../../../../src/common/pcs/kzg/Params.sol/library.KZGParams.html">KZGParams</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../../../src/common/piop/index.html">❱ piop</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/piop/AffineAddition.sol/struct.PartialSumsCommitments.html">PartialSumsCommitments</a></li><li class="chapter-item expanded "><a href="../../../../src/common/piop/AffineAddition.sol/struct.AffineAdditionEvaluations.html" class="active">AffineAdditionEvaluations</a></li><li class="chapter-item "><a href="../../../../src/common/piop/AffineAddition.sol/struct.AffineAdditionEvaluationsWithoutBitmask.html">AffineAdditionEvaluationsWithoutBitmask</a></li><li class="chapter-item "><a href="../../../../src/common/piop/AffineAddition.sol/library.BasicProtocol.html">BasicProtocol</a></li><li class="chapter-item "><a href="../../../../src/common/piop/BitmaskPacking.sol/struct.BitmaskPackingCommitments.html">BitmaskPackingCommitments</a></li><li class="chapter-item "><a href="../../../../src/common/piop/BitmaskPacking.sol/struct.PartialSumsAndBitmaskCommitments.html">PartialSumsAndBitmaskCommitments</a></li><li class="chapter-item "><a href="../../../../src/common/piop/BitmaskPacking.sol/struct.SuccinctAccountableRegisterEvaluations.html">SuccinctAccountableRegisterEvaluations</a></li><li class="chapter-item "><a href="../../../../src/common/piop/BitmaskPacking.sol/library.PackedProtocol.html">PackedProtocol</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/poly/index.html">❱ poly</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/poly/domain/index.html">❱ domain</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/poly/domain/Radix2.sol/struct.Radix2EvaluationDomain.html">Radix2EvaluationDomain</a></li><li class="chapter-item "><a href="../../../../src/common/poly/domain/Radix2.sol/library.Radix2.html">Radix2</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/poly/evaluations/index.html">❱ evaluations</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/poly/evaluations/Lagrange.sol/struct.LagrangeEvaluations.html">LagrangeEvaluations</a></li><li class="chapter-item "><a href="../../../../src/common/poly/evaluations/Lagrange.sol/library.Lagrange.html">Lagrange</a></li></ol></li></ol></li><li class="chapter-item "><a href="../../../../src/common/transcript/index.html">❱ transcript</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="../../../../src/common/transcript/Simple.sol/struct.Transcript.html">Transcript</a></li><li class="chapter-item "><a href="../../../../src/common/transcript/Simple.sol/library.SimpleTranscript.html">SimpleTranscript</a></li></ol></li><li class="chapter-item "><a href="../../../../src/common/Bitmask.sol/struct.Bitmask.html">Bitmask</a></li><li class="chapter-item "><a href="../../../../src/common/Bitmask.sol/library.BitMask.html">BitMask</a></li><li class="chapter-item "><a href="../../../../src/common/KeySet.sol/struct.KeysetCommitment.html">KeysetCommitment</a></li><li class="chapter-item "><a href="../../../../src/common/KeySet.sol/library.KeySet.html">KeySet</a></li><li class="chapter-item "><a href="../../../../src/common/PackedProof.sol/struct.PackedProof.html">PackedProof</a></li><li class="chapter-item "><a href="../../../../src/common/PackedProof.sol/struct.Challenges.html">Challenges</a></li><li class="chapter-item "><a href="../../../../src/common/PublicInput.sol/struct.AccountablePublicInput.html">AccountablePublicInput</a></li><li class="chapter-item "><a href="../../../../src/common/PublicInput.sol/library.PublicInput.html">PublicInput</a></li><li class="chapter-item "><a href="../../../../src/common/SimpleProof.sol/struct.SimpleProof.html">SimpleProof</a></li><li class="chapter-item "><a href="../../../../src/common/SimpleProof.sol/struct.Challenges.html">Challenges</a></li></ol></li><li class="chapter-item "><a href="../../../../src/Basic.sol/contract.Basic.html">Basic</a></li><li class="chapter-item "><a href="../../../../src/Packed.sol/contract.Packed.html">Packed</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">APK verifier</h1>
+
+                    <div class="right-buttons">
+                        <a href="../../../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/darwinia-network/apk-verifier" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="affineadditionevaluations"><a class="header" href="#affineadditionevaluations">AffineAdditionEvaluations</a></h1>
+<p><a href="https://github.com/darwinia-network/apk-verifier/blob/a6625475f1b4329f8ef12a17e6d7893dbd4e683e/src/common/piop/AffineAddition.sol">Git Source</a></p>
+<p><em>Affine addition evaluations</em></p>
+<pre><code class="language-solidity">struct AffineAdditionEvaluations {
+    Bw6Fr[2] keyset;
+    Bw6Fr bitmask;
+    Bw6Fr[2] partial_sums;
+}
+</code></pre>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../../../../src/common/piop/AffineAddition.sol/struct.PartialSumsCommitments.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next" href="../../../../src/common/piop/AffineAddition.sol/struct.AffineAdditionEvaluationsWithoutBitmask.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../../../../src/common/piop/AffineAddition.sol/struct.PartialSumsCommitments.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next" href="../../../../src/common/piop/AffineAddition.sol/struct.AffineAdditionEvaluationsWithoutBitmask.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../../../../elasticlunr.min.js"></script>
+        <script src="../../../../mark.min.js"></script>
+        <script src="../../../../searcher.js"></script>
+
+        <script src="../../../../clipboard.min.js"></script>
+        <script src="../../../../highlight.js"></script>
+        <script src="../../../../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../../../../solidity.min.js"></script>
+
+
+    </div>
+    </body>
+</html>
